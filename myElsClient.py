@@ -6,7 +6,8 @@ class myElsClient:
 
     # local variables
     __base_url = "https://api.elsevier.com/"
-
+    __userAgent = "myElsClient.py"
+    
     # constructors
     def __init__(self, apiKey):
         """Instantiates a client with a given API Key."""
@@ -26,13 +27,14 @@ class myElsClient:
     def execRequest(self,pathStr,queryStr):
         """Constructs and sends the actual request; returns response."""
         headers = {
-            "X-ELS-APIKey" : self.apiKey
+            "X-ELS-APIKey"  : self.apiKey,
+            "User-Agent"    : self.__userAgent
             }
         r = requests.get(
             self.__base_url + pathStr + queryStr,
             headers = headers
             )
         if r.status_code == 200:
-            return r
+            return r.text
         else:
-            print "error"
+            return "HTTP error"
