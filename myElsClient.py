@@ -5,7 +5,7 @@ class myElsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
     # local variables
-    __base_url = "http://api.elsevier.com/"
+    __base_url = "https://api.elsevier.com/"
 
     # constructors
     def __init__(self, apiKey):
@@ -21,3 +21,12 @@ class myElsClient:
     def getBaseURL(self):
         """Returns the base URL currently configured for Elsevier's APIs"""
         return self.__base_url
+
+    # request/response execution functions
+    """Constructs and send the actual request"""
+    def execRequest(self,path,params):
+        headers = {
+            "X-ELS-APIKey" : self.apiKey
+            }
+        r = requests.get(self.__base_url + path, headers = headers)
+        return r
