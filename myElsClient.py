@@ -13,8 +13,8 @@ class myElsClient:
         self.apiKey = apiKey
 
     # configuration functions
-    """Sets an institutional token for customer authentication"""
     def setInstToken(self, instToken):
+        """Sets an institutional token for customer authentication"""
         self.instToken = instToken
 
     # utility access functions
@@ -23,10 +23,13 @@ class myElsClient:
         return self.__base_url
 
     # request/response execution functions
-    """Constructs and send the actual request"""
-    def execRequest(self,path,params):
+    def execRequest(self,pathStr,queryStr):
+        """Constructs and send the actual request"""
         headers = {
             "X-ELS-APIKey" : self.apiKey
             }
-        r = requests.get(self.__base_url + path, headers = headers)
+        r = requests.get(
+            self.__base_url + pathStr + queryStr,
+            headers = headers
+            )
         return r
