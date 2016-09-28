@@ -24,7 +24,7 @@ class myElsClient:
 
     # request/response execution functions
     def execRequest(self,pathStr,queryStr):
-        """Constructs and send the actual request"""
+        """Constructs and sends the actual request; returns response."""
         headers = {
             "X-ELS-APIKey" : self.apiKey
             }
@@ -32,4 +32,7 @@ class myElsClient:
             self.__base_url + pathStr + queryStr,
             headers = headers
             )
-        return r
+        if r.status_code == 200:
+            return r
+        else:
+            print "error"
