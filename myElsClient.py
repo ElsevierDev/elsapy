@@ -37,4 +37,4 @@ class myElsClient:
         if r.status_code == 200:
             return r.text
         else:
-            return "HTTP error"
+            return "HTTP " + str(r.status_code) + " Error: \n" + r.text
