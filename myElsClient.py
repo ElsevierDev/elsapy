@@ -38,3 +38,15 @@ class myElsClient:
             return r.text
         else:
             return "HTTP " + str(r.status_code) + " Error: \n" + r.text
+
+
+class scopAuthor:
+    """A class representing an author in Scopus"""
+    
+    # local variables
+
+    # constructors
+    def __init__(self, authorID):
+        """Instantiates an author given a Scopus author ID"""
+        self.authorID = authorID
+    
