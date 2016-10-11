@@ -4,7 +4,7 @@ import requests
 class myElsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
-    # local variables
+    # static variables
     __base_url = "https://api.elsevier.com/"
     __userAgent = "myElsClient.py"
     
@@ -40,13 +40,15 @@ class myElsClient:
             return "HTTP " + str(r.status_code) + " Error: \n" + r.text
 
 
-class scopAuthor:
-    """A class representing an author in Scopus"""
+class elsEntity:
+    """An abstract class representing an entity in Elsevier's data model"""
     
     # local variables
 
     # constructors
-    def __init__(self, authorID):
+    def __init__(self, URI):
         """Instantiates an author given a Scopus author ID"""
-        self.authorID = authorID
+        self.uri = uri
+
+
     
