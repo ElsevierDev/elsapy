@@ -1,5 +1,5 @@
 import requests
-
+from abc import ABCMeta, abstractmethod
 
 class myElsClient:
     """A class that implements a Python interface to api.elsevier.com"""
@@ -10,7 +10,7 @@ class myElsClient:
     
     # constructors
     def __init__(self, apiKey):
-        """Instantiates a client with a given API Key."""
+        """Initializes a client with a given API Key."""
         self.apiKey = apiKey
 
     # configuration functions
@@ -43,12 +43,29 @@ class myElsClient:
 class elsEntity:
     """An abstract class representing an entity in Elsevier's data model"""
     
-    # local variables
+    # make class abstract
+    __metaclass__ = ABCMeta
 
     # constructors
+
+    @abstractmethod
     def __init__(self, URI):
-        """Instantiates an author given a Scopus author ID"""
-        self.uri = uri
+        """Initializes a data entity with its URI"""
+        self.uri = URI
 
+    def update(self):
+        """Fetches the latest data for this entity from api.elsevier.com"""
+        pass
 
-    
+    def getURI(self):
+        """Returns the URI of the entity instance"""
+        return self.uri
+
+class elsAuthor(elsEntity):
+    """An author of a document in Scopus"""
+
+    def __init__(self, URI):
+        """Initializes an author given a Scopus author ID"""
+        elsEntity.__init__(self, URI)
+        self.firstName = ""
+        self.lastName = ""
