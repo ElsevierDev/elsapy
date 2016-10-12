@@ -18,7 +18,7 @@ class myElsClient:
         """Sets an institutional token for customer authentication"""
         self.instToken = instToken
 
-    # utility access functions
+    # access functions
     def getBaseURL(self):
         """Returns the base URL currently configured for Elsevier's APIs"""
         return self.__base_url
@@ -36,8 +36,10 @@ class myElsClient:
             headers = headers
             )
         if r.status_code == 200:
+            # TODO: change to parse JSON
             return r.text
         else:
+            # TODO: change to throw exception and fail gracefully
             return "HTTP " + str(r.status_code) + " Error: \n" + r.text
 
 
@@ -48,16 +50,17 @@ class elsEntity:
     __metaclass__ = ABCMeta
 
     # constructors
-
     @abstractmethod
     def __init__(self, URI):
         """Initializes a data entity with its URI"""
         self.uri = URI
 
-    def update(self):
+    # modifier functions
+    def update(self, myElsClient):
         """Fetches the latest data for this entity from api.elsevier.com"""
-        pass
+        return myElsClient.execRequest(self.uri)
 
+    # access functions
     def getURI(self):
         """Returns the URI of the entity instance"""
         return self.uri
@@ -65,6 +68,7 @@ class elsEntity:
 class elsAuthor(elsEntity):
     """An author of a document in Scopus"""
 
+    # constructors
     def __init__(self, URI):
         """Initializes an author given a Scopus author ID"""
         elsEntity.__init__(self, URI)
