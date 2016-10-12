@@ -11,7 +11,7 @@ class myElsClient:
     # constructors
     def __init__(self, apiKey):
         """Initializes a client with a given API Key."""
-        self.apiKey = apiKey
+        self.__apiKey = apiKey
 
     # configuration functions
     def setInstToken(self, instToken):
@@ -20,14 +20,20 @@ class myElsClient:
 
     # access functions
     def getBaseURL(self):
-        """Returns the base URL currently configured for Elsevier's APIs"""
+        """Returns the ELSAPI base URL currently configured for the client"""
         return self.__base_url
+
+    # access functions
+    def showApiKey(self):
+        """Returns the APIKey currently configured for the client"""
+        return self.__apiKey
+    
 
     # request/response execution functions
     def execRequest(self,URI):
         """Sends the actual request; returns response."""
         headers = {
-            "X-ELS-APIKey"  : self.apiKey,
+            "X-ELS-APIKey"  : self.__apiKey,
             "User-Agent"    : self.__userAgent,
             "Accept"        : 'application/json'
             }
