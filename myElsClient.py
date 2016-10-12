@@ -24,14 +24,15 @@ class myElsClient:
         return self.__base_url
 
     # request/response execution functions
-    def execRequest(self,pathStr,queryStr):
-        """Constructs and sends the actual request; returns response."""
+    def execRequest(self,URI):
+        """Sends the actual request; returns response."""
         headers = {
             "X-ELS-APIKey"  : self.apiKey,
-            "User-Agent"    : self.__userAgent
+            "User-Agent"    : self.__userAgent,
+            "Accept"        : 'application/json'
             }
         r = requests.get(
-            self.__base_url + pathStr + queryStr,
+            URI,
             headers = headers
             )
         if r.status_code == 200:
