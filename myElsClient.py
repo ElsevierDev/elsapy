@@ -61,6 +61,7 @@ class elsEntity:
         self.uri = URI
 
     # modifier functions
+    @abstractmethod
     def update(self, myElsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
         return myElsClient.execRequest(self.uri)[payloadType][0]
@@ -86,5 +87,7 @@ class elsAuthor(elsEntity):
     # modifier functions
     def update(self, myElsClient):
         """Reads the JSON representation of the author from ELSAPI"""
-        obj = elsEntity.update(self, myElsClient, self.__payloadType)
-        return obj
+        obj = elsEntity.read(self, myElsClient, self.__payloadType)
+        self.firstName = obj[u'author-profile'][u'preferred-name'][u'given-name']
+        self.lastName = obj[u'author-profile'][u'preferred-name'][u'surname']
+        
