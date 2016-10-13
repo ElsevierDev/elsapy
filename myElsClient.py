@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from abc import ABCMeta, abstractmethod
 
 class myElsClient:
@@ -42,8 +42,7 @@ class myElsClient:
             headers = headers
             )
         if r.status_code == 200:
-            # TODO: change to parse JSON
-            return r.text
+            return json.loads(r.text)
         else:
             # TODO: change to throw exception and fail gracefully
             return "HTTP " + str(r.status_code) + " Error: \n" + r.text
