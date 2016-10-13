@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from abc import ABCMeta, abstractmethod
 
 class myElsClient:
@@ -42,8 +42,7 @@ class myElsClient:
             headers = headers
             )
         if r.status_code == 200:
-            # TODO: change to parse JSON
-            return r.text
+            return json.loads(r.text)
         else:
             # TODO: change to throw exception and fail gracefully
             return "HTTP " + str(r.status_code) + " Error: \n" + r.text
@@ -62,9 +61,9 @@ class elsEntity:
         self.uri = URI
 
     # modifier functions
-    def update(self, myElsClient):
+    def update(self, myElsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
-        return myElsClient.execRequest(self.uri)
+        return myElsClient.execRequest(self.uri)[payloadType][0]
 
     # access functions
     def getURI(self):
@@ -73,6 +72,9 @@ class elsEntity:
 
 class elsAuthor(elsEntity):
     """An author of a document in Scopus"""
+    
+    # static variables
+    __payloadType = u'author-retrieval-response'
 
     # constructors
     def __init__(self, URI):
@@ -80,3 +82,9 @@ class elsAuthor(elsEntity):
         elsEntity.__init__(self, URI)
         self.firstName = ""
         self.lastName = ""
+
+    # modifier functions
+    def update(self, myElsClient):
+        """Reads the JSON representation of the author from ELSAPI"""
+        obj = elsEntity.update(self, myElsClient, self.__payloadType)
+        return obj
