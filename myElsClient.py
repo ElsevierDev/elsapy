@@ -27,7 +27,6 @@ class myElsClient:
     def showApiKey(self):
         """Returns the APIKey currently configured for the client"""
         return self.__apiKey
-    
 
     # request/response execution functions
     def execRequest(self,URI):
@@ -64,7 +63,11 @@ class elsEntity:
     @abstractmethod
     def update(self, myElsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
-        response = myElsClient.execRequest(self.uri)[payloadType][0]
+        # TODO: check why response is serialized differently for auth vs affil
+        if isinstance(myElsClient.execRequest(self.uri)[payloadType], list):
+            response = myElsClient.execRequest(self.uri)[payloadType][0]
+        else:
+            response = myElsClient.execRequest(self.uri)[payloadType]
         self.ID = response["coredata"]["dc:identifier"]
         return response
 
@@ -72,6 +75,7 @@ class elsEntity:
     def getURI(self):
         """Returns the URI of the entity instance"""
         return self.uri
+
 
 class elsAuthor(elsEntity):
     """An author of a document in Scopus"""
@@ -93,3 +97,21 @@ class elsAuthor(elsEntity):
         self.firstName = obj[u'author-profile'][u'preferred-name'][u'given-name']
         self.lastName = obj[u'author-profile'][u'preferred-name'][u'surname']
         self.fullName = self.firstName + " " + self.lastName
+
+
+class elsAffil(elsEntity):
+    """An affilliation (i.e. an institution an author is affiliated with) in Scopus"""
+    
+    # static variables
+    __payloadType = u'affiliation-retrieval-response'
+
+    # constructors
+    def __init__(self, URI):
+        """Initializes an affiliation given a Scopus author ID"""
+        elsEntity.__init__(self, URI)
+
+    # modifier functions
+    def update(self, myElsClient):
+        """Reads the JSON representation of the affiliation from ELSAPI"""
+        obj = elsEntity.update(self, myElsClient, self.__payloadType)
+        self.name = obj["affiliation-name"]
