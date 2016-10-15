@@ -1,12 +1,12 @@
 import requests, json
 from abc import ABCMeta, abstractmethod
 
-class myElsClient:
+class elsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
     # static variables
     __base_url = "https://api.elsevier.com/"
-    __userAgent = "myElsClient.py"
+    __userAgent = "elsClient.py"
     
     # constructors
     def __init__(self, apiKey):
@@ -61,13 +61,13 @@ class elsEntity:
 
     # modifier functions
     @abstractmethod
-    def update(self, myElsClient, payloadType):
+    def update(self, elsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
         # TODO: check why response is serialized differently for auth vs affil
-        if isinstance(myElsClient.execRequest(self.uri)[payloadType], list):
-            response = myElsClient.execRequest(self.uri)[payloadType][0]
+        if isinstance(elsClient.execRequest(self.uri)[payloadType], list):
+            response = elsClient.execRequest(self.uri)[payloadType][0]
         else:
-            response = myElsClient.execRequest(self.uri)[payloadType]
+            response = elsClient.execRequest(self.uri)[payloadType]
         self.ID = response["coredata"]["dc:identifier"]
         return response
 
@@ -91,9 +91,9 @@ class elsAuthor(elsEntity):
         self.lastName = ""
 
     # modifier functions
-    def update(self, myElsClient):
+    def update(self, elsClient):
         """Reads the JSON representation of the author from ELSAPI"""
-        obj = elsEntity.update(self, myElsClient, self.__payloadType)
+        obj = elsEntity.update(self, elsClient, self.__payloadType)
         self.firstName = obj[u'author-profile'][u'preferred-name'][u'given-name']
         self.lastName = obj[u'author-profile'][u'preferred-name'][u'surname']
         self.fullName = self.firstName + " " + self.lastName
@@ -111,7 +111,7 @@ class elsAffil(elsEntity):
         elsEntity.__init__(self, URI)
 
     # modifier functions
-    def update(self, myElsClient):
+    def update(self, elsClient):
         """Reads the JSON representation of the affiliation from ELSAPI"""
-        obj = elsEntity.update(self, myElsClient, self.__payloadType)
+        obj = elsEntity.update(self, elsClient, self.__payloadType)
         self.name = obj["affiliation-name"]
