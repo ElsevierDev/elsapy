@@ -44,7 +44,7 @@ class elsClient:
             return json.loads(r.text)
         else:
             # TODO: change to throw exception and fail gracefully
-            return "HTTP " + str(r.status_code) + " Error: \n" + r.text
+            print "HTTP " + str(r.status_code) + " Error: \n" + r.text
 
 
 class elsEntity:
@@ -64,12 +64,13 @@ class elsEntity:
     def update(self, elsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
         # TODO: check why response is serialized differently for auth vs affil
-        if isinstance(elsClient.execRequest(self.uri)[payloadType], list):
-            response = elsClient.execRequest(self.uri)[payloadType][0]
+        self.apiResponse = elsClient.execRequest(self.uri)
+        if isinstance(self.apiResponse[payloadType], list):
+            data = self.apiResponse[payloadType][0]
         else:
-            response = elsClient.execRequest(self.uri)[payloadType]
-        self.ID = response["coredata"]["dc:identifier"]
-        return response
+            data = self.apiResponse[payloadType]
+        self.ID = data["coredata"]["dc:identifier"]
+        return data
 
     # access functions
     def getURI(self):
@@ -115,3 +116,21 @@ class elsAffil(elsEntity):
         """Reads the JSON representation of the affiliation from ELSAPI"""
         obj = elsEntity.update(self, elsClient, self.__payloadType)
         self.name = obj["affiliation-name"]
+
+
+class elsDoc(elsEntity):
+    """A document in Scopus"""
+    
+    # static variables
+    __payloadType = u'abstracts-retrieval-response'
+
+    # constructors
+    def __init__(self, URI):
+        """Initializes an affiliation given a Scopus author ID"""
+        elsEntity.__init__(self, URI)
+
+    # modifier functions
+    def update(self, elsClient):
+        """Reads the JSON representation of the document from ELSAPI"""
+        obj = elsEntity.update(self, elsClient, self.__payloadType)
+        self.title = obj["coredata"]["dc:title"]
