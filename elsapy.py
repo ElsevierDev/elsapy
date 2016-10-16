@@ -64,13 +64,12 @@ class elsEntity:
     def update(self, elsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
         # TODO: check why response is serialized differently for auth vs affil
-        self.apiResponse = elsClient.execRequest(self.uri)
-        if isinstance(self.apiResponse[payloadType], list):
-            data = self.apiResponse[payloadType][0]
+        apiResponse = elsClient.execRequest(self.uri)
+        if isinstance(apiResponse[payloadType], list):
+            self.data = apiResponse[payloadType][0]
         else:
-            data = self.apiResponse[payloadType]
-        self.ID = data["coredata"]["dc:identifier"]
-        return data
+            self.data = apiResponse[payloadType]
+        self.ID = self.data["coredata"]["dc:identifier"]
 
     # access functions
     def getURI(self):
@@ -94,9 +93,9 @@ class elsAuthor(elsEntity):
     # modifier functions
     def update(self, elsClient):
         """Reads the JSON representation of the author from ELSAPI"""
-        obj = elsEntity.update(self, elsClient, self.__payloadType)
-        self.firstName = obj[u'author-profile'][u'preferred-name'][u'given-name']
-        self.lastName = obj[u'author-profile'][u'preferred-name'][u'surname']
+        elsEntity.update(self, elsClient, self.__payloadType)
+        self.firstName = self.data[u'author-profile'][u'preferred-name'][u'given-name']
+        self.lastName = self.data[u'author-profile'][u'preferred-name'][u'surname']
         self.fullName = self.firstName + " " + self.lastName
 
 
@@ -114,8 +113,8 @@ class elsAffil(elsEntity):
     # modifier functions
     def update(self, elsClient):
         """Reads the JSON representation of the affiliation from ELSAPI"""
-        obj = elsEntity.update(self, elsClient, self.__payloadType)
-        self.name = obj["affiliation-name"]
+        elsEntity.update(self, elsClient, self.__payloadType)
+        self.name = self.data["affiliation-name"]
 
 
 class elsDoc(elsEntity):
@@ -132,5 +131,5 @@ class elsDoc(elsEntity):
     # modifier functions
     def update(self, elsClient):
         """Reads the JSON representation of the document from ELSAPI"""
-        obj = elsEntity.update(self, elsClient, self.__payloadType)
-        self.title = obj["coredata"]["dc:title"]
+        elsEntity.update(self, elsClient, self.__payloadType)
+        self.title = self.data["coredata"]["dc:title"]
