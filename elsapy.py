@@ -1,12 +1,12 @@
 import requests, json
 from abc import ABCMeta, abstractmethod
 
-class myElsClient:
+class elsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
     # static variables
     __base_url = "https://api.elsevier.com/"
-    __userAgent = "myElsClient.py"
+    __userAgent = "elsClient.py"
     
     # constructors
     def __init__(self, apiKey):
@@ -29,7 +29,7 @@ class myElsClient:
         return self.__apiKey
 
     # request/response execution functions
-    def execRequest(self,URI):
+    def execRequest(self,URL):
         """Sends the actual request; returns response."""
         headers = {
             "X-ELS-APIKey"  : self.__apiKey,
@@ -37,14 +37,14 @@ class myElsClient:
             "Accept"        : 'application/json'
             }
         r = requests.get(
-            URI,
+            URL,
             headers = headers
             )
         if r.status_code == 200:
             return json.loads(r.text)
         else:
-            # TODO: change to throw exception and fail gracefully
-            return "HTTP " + str(r.status_code) + " Error: \n" + r.text
+            # TODO: change to throw exception and fail 
+            print "HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text
 
 
 class elsEntity:
@@ -61,15 +61,21 @@ class elsEntity:
 
     # modifier functions
     @abstractmethod
-    def update(self, myElsClient, payloadType):
+    def read(self, elsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
         # TODO: check why response is serialized differently for auth vs affil
-        if isinstance(myElsClient.execRequest(self.uri)[payloadType], list):
-            response = myElsClient.execRequest(self.uri)[payloadType][0]
+        apiResponse = elsClient.execRequest(self.uri)
+        if isinstance(apiResponse[payloadType], list):
+            self.data = apiResponse[payloadType][0]
         else:
-            response = myElsClient.execRequest(self.uri)[payloadType]
-        self.ID = response["coredata"]["dc:identifier"]
-        return response
+            self.data = apiResponse[payloadType]
+        self.ID = self.data["coredata"]["dc:identifier"]
+
+    # @abstractmethod ## needs to be overridden in client classes so that where it is not applicable, it returns something else.
+    def readDocs(self, elsClient):
+        """Fetches the list of documents associated with  this entity from api.elsevier.com"""
+        self.apiResponse = elsClient.execRequest(self.uri + "?view=documents")
+
 
     # access functions
     def getURI(self):
@@ -91,11 +97,11 @@ class elsAuthor(elsEntity):
         self.lastName = ""
 
     # modifier functions
-    def update(self, myElsClient):
+    def read(self, elsClient):
         """Reads the JSON representation of the author from ELSAPI"""
-        obj = elsEntity.update(self, myElsClient, self.__payloadType)
-        self.firstName = obj[u'author-profile'][u'preferred-name'][u'given-name']
-        self.lastName = obj[u'author-profile'][u'preferred-name'][u'surname']
+        elsEntity.read(self, elsClient, self.__payloadType)
+        self.firstName = self.data[u'author-profile'][u'preferred-name'][u'given-name']
+        self.lastName = self.data[u'author-profile'][u'preferred-name'][u'surname']
         self.fullName = self.firstName + " " + self.lastName
 
 
@@ -111,7 +117,25 @@ class elsAffil(elsEntity):
         elsEntity.__init__(self, URI)
 
     # modifier functions
-    def update(self, myElsClient):
+    def read(self, elsClient):
         """Reads the JSON representation of the affiliation from ELSAPI"""
-        obj = elsEntity.update(self, myElsClient, self.__payloadType)
-        self.name = obj["affiliation-name"]
+        elsEntity.read(self, elsClient, self.__payloadType)
+        self.name = self.data["affiliation-name"]
+
+
+class elsDoc(elsEntity):
+    """A document in Scopus"""
+    
+    # static variables
+    __payloadType = u'abstracts-retrieval-response'
+
+    # constructors
+    def __init__(self, URI):
+        """Initializes an affiliation given a Scopus author ID"""
+        elsEntity.__init__(self, URI)
+
+    # modifier functions
+    def read(self, elsClient):
+        """Reads the JSON representation of the document from ELSAPI"""
+        elsEntity.read(self, elsClient, self.__payloadType)
+        self.title = self.data["coredata"]["dc:title"]
