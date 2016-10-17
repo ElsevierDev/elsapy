@@ -44,7 +44,7 @@ class elsClient:
             return json.loads(r.text)
         else:
             # TODO: change to throw exception and fail 
-            print "HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text
+            print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
 
 
 class elsEntity:
@@ -71,10 +71,11 @@ class elsEntity:
             self.data = apiResponse[payloadType]
         self.ID = self.data["coredata"]["dc:identifier"]
 
-    # @abstractmethod ## needs to be overridden in client classes so that where it is not applicable, it returns something else.
-    def readDocs(self, elsClient):
-        """Fetches the list of documents associated with  this entity from api.elsevier.com"""
-        self.apiResponse = elsClient.execRequest(self.uri + "?view=documents")
+    @abstractmethod ## needs to be overridden in client classes so that where it is not applicable, it returns something else.
+    def readDocs(self, elsClient, payloadType):
+        """Fetches the list of documents associated with this entity from api.elsevier.com"""
+        apiResponse = elsClient.execRequest(self.uri + "?view=documents")
+        return apiResponse[payloadType]
 
 
     # access functions
@@ -103,6 +104,11 @@ class elsAuthor(elsEntity):
         self.firstName = self.data[u'author-profile'][u'preferred-name'][u'given-name']
         self.lastName = self.data[u'author-profile'][u'preferred-name'][u'surname']
         self.fullName = self.firstName + " " + self.lastName
+
+    def readDocs(self, elsClient):
+        """Fetches the list of documents associated with this author from api.elsevier.com"""
+        self.apiResponse = elsEntity.readDocs(self, elsClient, self.__payloadType)
+        self.docList = [x for x in self.apiResponse[0]["documents"]["abstract-document"]]
 
 
 class elsAffil(elsEntity):
@@ -139,3 +145,4 @@ class elsDoc(elsEntity):
         """Reads the JSON representation of the document from ELSAPI"""
         elsEntity.read(self, elsClient, self.__payloadType)
         self.title = self.data["coredata"]["dc:title"]
+
