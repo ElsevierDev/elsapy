@@ -107,8 +107,8 @@ class elsAuthor(elsEntity):
 
     def readDocs(self, elsClient):
         """Fetches the list of documents associated with this author from api.elsevier.com"""
-        self.apiResponse = elsEntity.readDocs(self, elsClient, self.__payloadType)
-        self.docList = [x for x in self.apiResponse[0]["documents"]["abstract-document"]]
+        apiResponse = elsEntity.readDocs(self, elsClient, self.__payloadType)
+        self.docList = [x for x in apiResponse[0]["documents"]["abstract-document"]]
 
 
 class elsAffil(elsEntity):
