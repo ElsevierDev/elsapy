@@ -1,3 +1,3 @@
-# myElsClient
+# elsapy
 
-A client library for use with api.elsevier.com.
+A client library written in Python for use with api.elsevier.com.
