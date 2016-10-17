@@ -44,7 +44,7 @@ class elsClient:
             return json.loads(r.text)
         else:
             # TODO: change to throw exception and fail 
-            print "HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text
+            print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
 
 
 class elsEntity:
