@@ -10,6 +10,11 @@ A Python library for use with api.elsevier.com, containing the following classes
 
 More info on the Scopus data model can be read [here](https://dev.elsevier.com/tecdoc_ir_cris_vivo.html).
 
-**Prerequisites:**
+## Prerequisites
 *   An API key from http://dev.elsevier.com
-*   The [Requests HTTP library](http://docs.python-requests.org/) for Python
+*   Python 3.x, with the [Requests HTTP library](http://docs.python-requests.org/)  installed
+*   A network connection at an institution that subscribes to Scopus
+
+## Quick start
+*   Add your APIkey to config.json
+*   Modify testScript.py to suit your needs
