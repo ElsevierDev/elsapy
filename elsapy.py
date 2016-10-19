@@ -1,12 +1,14 @@
-import requests, json
+import requests, json, time
 from abc import ABCMeta, abstractmethod
 
 class elsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
-    # static variables
-    __base_url = "https://api.elsevier.com/"
-    __userAgent = "elsClient.py"
+    # class variables
+    __base_url = "https://api.elsevier.com/"    ## Base URL for later use
+    __userAgent = "elsClient.py"                ## Helps track library use
+    __minReqInterval = 1                        ## Min. request interval in sec
+    __tsLastReq = time.time()
     
     # constructors
     def __init__(self, apiKey):
@@ -31,6 +33,14 @@ class elsClient:
     # request/response execution functions
     def execRequest(self,URL):
         """Sends the actual request; returns response."""
+
+        ## Throttle request, if need be
+        interval = time.time() - self.__tsLastReq
+        if (interval < self.__minReqInterval):
+            time.sleep( self.__minReqInterval - interval )
+        self.__tsLastReq = time.time()
+
+        ## Construct and execute request
         headers = {
             "X-ELS-APIKey"  : self.__apiKey,
             "User-Agent"    : self.__userAgent,
@@ -71,7 +81,7 @@ class elsEntity:
             self.data = apiResponse[payloadType]
         self.ID = self.data["coredata"]["dc:identifier"]
 
-    @abstractmethod ## needs to be overridden in client classes so that where it is not applicable, it returns something else.
+    @abstractmethod ## TODO: needs to be overridden in client classes so that where it is not applicable, it returns something else.
     def readDocs(self, elsClient, payloadType):
         """Fetches the list of documents associated with this entity from api.elsevier.com"""
         apiResponse = elsClient.execRequest(self.uri + "?view=documents")
