@@ -9,3 +9,7 @@ A Python library for use with api.elsevier.com, containing the following classes
 	* elsDoc: represents a document in Scopus. This document typically is the record of a scholarly article in any of the journals covered in Scopus.
 
 More info on the Scopus data model can be read [here](https://dev.elsevier.com/tecdoc_ir_cris_vivo.html).
+
+**Prerequisites:**
+*   An API key from http://dev.elsevier.com
+*   The [Requests HTTP library](http://docs.python-requests.org/) for Python
