@@ -6,7 +6,7 @@ config = json.load(conFile)
 
 myCl = elsClient(config['apikey'])
 
-myAuth = elsAuthor('http://api.elsevier.com/content/author/AUTHOR_ID:55934026500')
+myAuth = elsAuthor('http://api.elsevier.com/content/author/AUTHOR_ID:7004367821')
 myAuth.read(myCl)
 print ("myAuth.fullName: ", myAuth.fullName)
 

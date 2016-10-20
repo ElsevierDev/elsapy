@@ -8,7 +8,8 @@ class elsClient:
     __base_url = "https://api.elsevier.com/"    ## Base URL for later use
     __userAgent = "elsClient.py"                ## Helps track library use
     __minReqInterval = 1                        ## Min. request interval in sec
-    __tsLastReq = time.time()
+    __tsLastReq = time.time()                   ## Tracker for throttling
+    numRes = 25                                 ## Max # of records per request
     
     # constructors
     def __init__(self, apiKey):
@@ -85,7 +86,14 @@ class elsEntity:
     def readDocs(self, elsClient, payloadType):
         """Fetches the list of documents associated with this entity from api.elsevier.com"""
         apiResponse = elsClient.execRequest(self.uri + "?view=documents")
-        return apiResponse[payloadType]
+        docCount = int(apiResponse[payloadType][0]["documents"]["@total"])
+        print ("Doc count:", docCount)
+        self.docList = [x for x in apiResponse[payloadType][0]["documents"]["abstract-document"]]
+        for i in range (0, docCount//elsClient.numRes):
+            print (i+1)
+            apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.numRes+1))
+            self.docList = self.docList + [x for x in apiResponse[payloadType][0]["documents"]["abstract-document"]]                                   
+            
 
 
     # access functions
@@ -117,8 +125,8 @@ class elsAuthor(elsEntity):
 
     def readDocs(self, elsClient):
         """Fetches the list of documents associated with this author from api.elsevier.com"""
-        apiResponse = elsEntity.readDocs(self, elsClient, self.__payloadType)
-        self.docList = [x for x in apiResponse[0]["documents"]["abstract-document"]]
+        elsEntity.readDocs(self, elsClient, self.__payloadType)
+        
 
 
 class elsAffil(elsEntity):
