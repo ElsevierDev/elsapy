@@ -84,17 +84,15 @@ class elsEntity:
 
     @abstractmethod ## TODO: needs to be overridden in client classes so that where it is not applicable, it returns something else.
     def readDocs(self, elsClient, payloadType):
-        """Fetches the list of documents associated with this entity from api.elsevier.com"""
+        """Fetches the list of documents associated with this entity from
+            api.elsevier.com. If need be, splits the requests in batches to
+            retrieve them all. """
         apiResponse = elsClient.execRequest(self.uri + "?view=documents")
         docCount = int(apiResponse[payloadType][0]["documents"]["@total"])
-        print ("Doc count:", docCount)
         self.docList = [x for x in apiResponse[payloadType][0]["documents"]["abstract-document"]]
         for i in range (0, docCount//elsClient.numRes):
-            print (i+1)
             apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.numRes+1))
             self.docList = self.docList + [x for x in apiResponse[payloadType][0]["documents"]["abstract-document"]]                                   
-            
-
 
     # access functions
     def getURI(self):
@@ -127,7 +125,6 @@ class elsAuthor(elsEntity):
         """Fetches the list of documents associated with this author from api.elsevier.com"""
         elsEntity.readDocs(self, elsClient, self.__payloadType)
         
-
 
 class elsAffil(elsEntity):
     """An affilliation (i.e. an institution an author is affiliated with) in Scopus"""
@@ -163,4 +160,3 @@ class elsDoc(elsEntity):
         """Reads the JSON representation of the document from ELSAPI"""
         elsEntity.read(self, elsClient, self.__payloadType)
         self.title = self.data["coredata"]["dc:title"]
-
