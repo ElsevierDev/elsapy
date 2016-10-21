@@ -26,7 +26,6 @@ class elsClient:
         """Returns the ELSAPI base URL currently configured for the client"""
         return self.__base_url
 
-    # access functions
     def showApiKey(self):
         """Returns the APIKey currently configured for the client"""
         return self.__apiKey
