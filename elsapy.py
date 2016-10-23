@@ -15,11 +15,14 @@ class elsClient:
     def __init__(self, apiKey):
         """Initializes a client with a given API Key."""
         self.__apiKey = apiKey
+        self.__instToken = ""
+
+    ## TODO: add constructor that also takes instToken
 
     # configuration functions
     def setInstToken(self, instToken):
         """Sets an institutional token for customer authentication"""
-        self.instToken = instToken
+        self.__instToken = instToken
 
     # access functions
     def getBaseURL(self):
@@ -46,6 +49,8 @@ class elsClient:
             "User-Agent"    : self.__userAgent,
             "Accept"        : 'application/json'
             }
+        if self.__instToken:
+            headers["X-ELS-Insttoken"] = self.__instToken
         r = requests.get(
             URL,
             headers = headers
