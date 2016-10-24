@@ -58,7 +58,8 @@ class elsClient:
         if r.status_code == 200:
             return json.loads(r.text)
         else:
-            # TODO: change to throw exception and fail 
+            # TODO: change to throw exception and fail
+            raise (requests.HTTPError, requests.RequestException)
             print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
 
 
@@ -77,36 +78,45 @@ class elsEntity:
     # modifier functions
     @abstractmethod
     def read(self, elsClient, payloadType):
-        """Fetches the latest data for this entity from api.elsevier.com"""
-        apiResponse = elsClient.execRequest(self.uri)
-        # TODO: check why response is serialized differently for auth vs affil
-        if isinstance(apiResponse[payloadType], list):
-            self.data = apiResponse[payloadType][0]
-        else:
-            self.data = apiResponse[payloadType]
-        self.ID = self.data["coredata"]["dc:identifier"]
+        """Fetches the latest data for this entity from api.elsevier.com.
+            Returns True if successful; else, False."""
+        try:
+            apiResponse = elsClient.execRequest(self.uri)
+            # TODO: check why response is serialized differently for auth vs affil
+            if isinstance(apiResponse[payloadType], list):
+                self.data = apiResponse[payloadType][0]
+            else:
+                self.data = apiResponse[payloadType]
+            self.ID = self.data["coredata"]["dc:identifier"]
+            return True
+        except (requests.HTTPError, requests.RequestException):
+            return False
 
     @abstractmethod ## TODO: needs to be overridden in client classes so that where it is not applicable, it returns something else.
     def readDocs(self, elsClient, payloadType):
         """Fetches the list of documents associated with this entity from
             api.elsevier.com. If need be, splits the requests in batches to
-            retrieve them all. """
-        apiResponse = elsClient.execRequest(self.uri + "?view=documents")
-        # TODO: check why response is serialized differently for auth vs affil; refactor
-        if isinstance(apiResponse[payloadType], list):
-            data = apiResponse[payloadType][0]
-        else:
-            data = apiResponse[payloadType]
-        docCount = int(data["documents"]["@total"])
-        self.docList = [x for x in data["documents"]["abstract-document"]]
-        for i in range (0, docCount//elsClient.numRes):
-            apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.numRes+1))
+            retrieve them all. Returns True if successful; else, False."""
+        try:
+            apiResponse = elsClient.execRequest(self.uri + "?view=documents")
             # TODO: check why response is serialized differently for auth vs affil; refactor
             if isinstance(apiResponse[payloadType], list):
                 data = apiResponse[payloadType][0]
             else:
                 data = apiResponse[payloadType]
-            self.docList = self.docList + [x for x in data["documents"]["abstract-document"]]                                   
+            docCount = int(data["documents"]["@total"])
+            self.docList = [x for x in data["documents"]["abstract-document"]]
+            for i in range (0, docCount//elsClient.numRes):
+                apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.numRes+1))
+                # TODO: check why response is serialized differently for auth vs affil; refactor
+                if isinstance(apiResponse[payloadType], list):
+                    data = apiResponse[payloadType][0]
+                else:
+                    data = apiResponse[payloadType]
+                self.docList = self.docList + [x for x in data["documents"]["abstract-document"]]
+            return True
+        except (requests.HTTPError, requests.RequestException):
+            return False
 
     # access functions
     def getURI(self):
@@ -129,15 +139,20 @@ class elsAuthor(elsEntity):
 
     # modifier functions
     def read(self, elsClient):
-        """Reads the JSON representation of the author from ELSAPI"""
-        elsEntity.read(self, elsClient, self.__payloadType)
-        self.firstName = self.data[u'author-profile'][u'preferred-name'][u'given-name']
-        self.lastName = self.data[u'author-profile'][u'preferred-name'][u'surname']
-        self.fullName = self.firstName + " " + self.lastName
+        """Reads the JSON representation of the author from ELSAPI.
+            Returns True if successful; else, False."""
+        if elsEntity.read(self, elsClient, self.__payloadType):
+            self.firstName = self.data[u'author-profile'][u'preferred-name'][u'given-name']
+            self.lastName = self.data[u'author-profile'][u'preferred-name'][u'surname']
+            self.fullName = self.firstName + " " + self.lastName
+            return True
+        else:
+            return False
 
     def readDocs(self, elsClient):
-        """Fetches the list of documents associated with this author from api.elsevier.com"""
-        elsEntity.readDocs(self, elsClient, self.__payloadType)
+        """Fetches the list of documents associated with this author from api.elsevier.com.
+             Returns True if successful; else, False."""
+        return elsEntity.readDocs(self, elsClient, self.__payloadType)
         
 
 class elsAffil(elsEntity):
@@ -153,13 +168,18 @@ class elsAffil(elsEntity):
 
     # modifier functions
     def read(self, elsClient):
-        """Reads the JSON representation of the affiliation from ELSAPI"""
-        elsEntity.read(self, elsClient, self.__payloadType)
-        self.name = self.data["affiliation-name"]
+        """Reads the JSON representation of the affiliation from ELSAPI.
+             Returns True if successful; else, False."""
+        if elsEntity.read(self, elsClient, self.__payloadType):
+            self.name = self.data["affiliation-name"]
+            return True
+        else:
+            return False
 
     def readDocs(self, elsClient):
-        """Fetches the list of documents associated with this affiliation from api.elsevier.com"""
-        elsEntity.readDocs(self, elsClient, self.__payloadType)
+        """Fetches the list of documents associated with this affiliation from api.elsevier.com.
+             Returns True if successful; else, False."""
+        return elsEntity.readDocs(self, elsClient, self.__payloadType)
         
 
 class elsDoc(elsEntity):
@@ -175,6 +195,10 @@ class elsDoc(elsEntity):
 
     # modifier functions
     def read(self, elsClient):
-        """Reads the JSON representation of the document from ELSAPI"""
-        elsEntity.read(self, elsClient, self.__payloadType)
-        self.title = self.data["coredata"]["dc:title"]
+        """Reads the JSON representation of the document from ELSAPI.
+             Returns True if successful; else, False."""
+        if elsEntity.read(self, elsClient, self.__payloadType):
+            self.title = self.data["coredata"]["dc:title"]
+            return True
+        else:
+            return False
