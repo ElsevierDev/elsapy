@@ -1,7 +1,7 @@
 import requests, json, time
 from abc import ABCMeta, abstractmethod
 
-class elsClient(object):
+class elsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
     # class variables
