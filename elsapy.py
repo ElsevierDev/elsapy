@@ -17,8 +17,6 @@ class elsClient:
         self.__apiKey = apiKey
         self.__instToken = instToken
 
-    ## TODO: add constructor that also takes instToken
-
     # configuration functions
     def setInstToken(self, instToken):
         """Sets an institutional token for customer authentication"""
@@ -58,7 +56,6 @@ class elsClient:
         if r.status_code == 200:
             return json.loads(r.text)
         else:
-            # TODO: change to throw exception and fail
             raise (requests.HTTPError, requests.RequestException)
             print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
 
