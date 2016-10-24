@@ -4,8 +4,9 @@ A Python module for use with api.elsevier.com. Its aim is to make life easier fo
 
 * elsClient: represents a client interface to api.elsevier.com.
 * elsEntity: an abstract class representing an entity in the Elsevier (specifically, Scopus) data model. elsEntities can be initialized with a URI, after which they can read their own data from api.elsevier.com through an elsClient instance. elsEntity has the following descendants:
-	* elsAuthor: represent the author of one or more documents in Scopus.
-	* elsAffil: represents an affiliation (i.e. an institution authors are affiliated with) in Scopus
+	* elsProf: an abstract class representing a _profiled_ entity in Scopus. This class has two descendants:
+		* elsAuthor: represent the author of one or more documents in Scopus.
+		* elsAffil: represents an affiliation (i.e. an institution authors are affiliated with) in Scopus
 	* elsDoc: represents a document in Scopus. This document typically is the record of a scholarly article in any of the journals covered in Scopus.
 
 More info on the Scopus data model can be read [here](https://dev.elsevier.com/tecdoc_ir_cris_vivo.html). Over time, the module will be expanded to also cover access to ScienceDirect content.
