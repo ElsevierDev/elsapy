@@ -6,7 +6,7 @@ class elsClient:
 
     # class variables
     __base_url = "https://api.elsevier.com/"    ## Base URL for later use
-    __userAgent = "elsapy.py"                ## Helps track library use
+    __userAgent = "elsapy.py"                   ## Helps track library use
     __minReqInterval = 1                        ## Min. request interval in sec
     __tsLastReq = time.time()                   ## Tracker for throttling
     numRes = 25                                 ## Max # of records per request
@@ -60,11 +60,8 @@ class elsClient:
             print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
 
 
-class elsEntity:
+class elsEntity(metaclass=ABCMeta):
     """An abstract class representing an entity in Elsevier's data model"""
-    
-    # make class abstract
-    __metaclass__ = ABCMeta
 
     # constructors
     @abstractmethod
@@ -89,7 +86,15 @@ class elsEntity:
         except (requests.HTTPError, requests.RequestException):
             return False
 
-    @abstractmethod ## TODO: needs to be overridden in client classes so that where it is not applicable, it returns something else.
+    # access functions
+    def getURI(self):
+        """Returns the URI of the entity instance"""
+        return self.uri
+
+class elsProfile(elsEntity, metaclass=ABCMeta):
+    """An abstract class representing an author or affiliation profile in Elsevier's data model"""
+
+    @abstractmethod
     def readDocs(self, elsClient, payloadType):
         """Fetches the list of documents associated with this entity from
             api.elsevier.com. If need be, splits the requests in batches to
@@ -115,13 +120,7 @@ class elsEntity:
         except (requests.HTTPError, requests.RequestException):
             return False
 
-    # access functions
-    def getURI(self):
-        """Returns the URI of the entity instance"""
-        return self.uri
-
-
-class elsAuthor(elsEntity):
+class elsAuthor(elsProfile):
     """An author of a document in Scopus"""
     
     # static variables
@@ -138,7 +137,7 @@ class elsAuthor(elsEntity):
     def read(self, elsClient):
         """Reads the JSON representation of the author from ELSAPI.
             Returns True if successful; else, False."""
-        if elsEntity.read(self, elsClient, self.__payloadType):
+        if elsProfile.read(self, elsClient, self.__payloadType):
             self.firstName = self.data[u'author-profile'][u'preferred-name'][u'given-name']
             self.lastName = self.data[u'author-profile'][u'preferred-name'][u'surname']
             self.fullName = self.firstName + " " + self.lastName
@@ -149,10 +148,10 @@ class elsAuthor(elsEntity):
     def readDocs(self, elsClient):
         """Fetches the list of documents associated with this author from api.elsevier.com.
              Returns True if successful; else, False."""
-        return elsEntity.readDocs(self, elsClient, self.__payloadType)
+        return elsProfile.readDocs(self, elsClient, self.__payloadType)
         
 
-class elsAffil(elsEntity):
+class elsAffil(elsProfile):
     """An affilliation (i.e. an institution an author is affiliated with) in Scopus"""
     
     # static variables
@@ -160,14 +159,14 @@ class elsAffil(elsEntity):
 
     # constructors
     def __init__(self, URI):
-        """Initializes an affiliation given a Scopus author ID"""
+        """Initializes an affiliation given a Scopus affiliation ID"""
         elsEntity.__init__(self, URI)
 
     # modifier functions
     def read(self, elsClient):
         """Reads the JSON representation of the affiliation from ELSAPI.
              Returns True if successful; else, False."""
-        if elsEntity.read(self, elsClient, self.__payloadType):
+        if elsProfile.read(self, elsClient, self.__payloadType):
             self.name = self.data["affiliation-name"]
             return True
         else:
@@ -176,7 +175,7 @@ class elsAffil(elsEntity):
     def readDocs(self, elsClient):
         """Fetches the list of documents associated with this affiliation from api.elsevier.com.
              Returns True if successful; else, False."""
-        return elsEntity.readDocs(self, elsClient, self.__payloadType)
+        return elsProfile.readDocs(self, elsClient, self.__payloadType)
         
 
 class elsDoc(elsEntity):

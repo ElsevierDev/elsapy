@@ -23,6 +23,7 @@ myDoc = elsDoc('http://api.elsevier.com/content/abstract/SCOPUS_ID:84872135457')
 if myDoc.read(myCl):
     print ("myDoc.title: ", myDoc.title)
 
+
 ## Read all documents for example author
 if myAuth.readDocs(myCl):
     print ("myAuth.docList: ")
