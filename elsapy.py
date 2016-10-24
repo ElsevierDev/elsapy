@@ -78,8 +78,8 @@ class elsEntity:
     @abstractmethod
     def read(self, elsClient, payloadType):
         """Fetches the latest data for this entity from api.elsevier.com"""
-        # TODO: check why response is serialized differently for auth vs affil
         apiResponse = elsClient.execRequest(self.uri)
+        # TODO: check why response is serialized differently for auth vs affil
         if isinstance(apiResponse[payloadType], list):
             self.data = apiResponse[payloadType][0]
         else:
@@ -92,11 +92,21 @@ class elsEntity:
             api.elsevier.com. If need be, splits the requests in batches to
             retrieve them all. """
         apiResponse = elsClient.execRequest(self.uri + "?view=documents")
-        docCount = int(apiResponse[payloadType][0]["documents"]["@total"])
-        self.docList = [x for x in apiResponse[payloadType][0]["documents"]["abstract-document"]]
+        # TODO: check why response is serialized differently for auth vs affil; refactor
+        if isinstance(apiResponse[payloadType], list):
+            data = apiResponse[payloadType][0]
+        else:
+            data = apiResponse[payloadType]
+        docCount = int(data["documents"]["@total"])
+        self.docList = [x for x in data["documents"]["abstract-document"]]
         for i in range (0, docCount//elsClient.numRes):
             apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.numRes+1))
-            self.docList = self.docList + [x for x in apiResponse[payloadType][0]["documents"]["abstract-document"]]                                   
+            # TODO: check why response is serialized differently for auth vs affil; refactor
+            if isinstance(apiResponse[payloadType], list):
+                data = apiResponse[payloadType][0]
+            else:
+                data = apiResponse[payloadType]
+            self.docList = self.docList + [x for x in data["documents"]["abstract-document"]]                                   
 
     # access functions
     def getURI(self):
@@ -147,6 +157,10 @@ class elsAffil(elsEntity):
         elsEntity.read(self, elsClient, self.__payloadType)
         self.name = self.data["affiliation-name"]
 
+    def readDocs(self, elsClient):
+        """Fetches the list of documents associated with this affiliation from api.elsevier.com"""
+        elsEntity.readDocs(self, elsClient, self.__payloadType)
+        
 
 class elsDoc(elsEntity):
     """A document in Scopus"""
