@@ -17,6 +17,7 @@ class elsClient:
         self.apiKey = apiKey
         self.instToken = instToken
 
+    # properties
     @property
     def instToken(self):
         """Get the instToken for the client instance"""
@@ -24,15 +25,17 @@ class elsClient:
 
     @instToken.setter
     def instToken(self, instToken):
+        """Set the instToken for the client instance"""
         self._instToken = instToken
 
     @property
     def apiKey(self):
-        """Get the instToken for the client instance"""
+        """Get the apiKey for the client instance"""
         return self._apiKey
 
     @apiKey.setter
     def apiKey(self, apiKey):
+        """Set the apiKey for the client instance"""
         self._apiKey = apiKey
 
     # access functions
@@ -78,10 +81,21 @@ class elsEntity(metaclass=ABCMeta):
 
     # constructors
     @abstractmethod
-    def __init__(self, URI):
+    def __init__(self, uri):
         """Initializes a data entity with its URI"""
-        self.uri = URI
+        self._uri = uri
 
+    # properties
+    @property
+    def uri(self):
+        """Get the URI of the entity instance"""
+        return self._uri
+
+    @uri.setter
+    def uri(self, uri):
+        """Get the URI of the entity instance"""
+        self._uri = uri
+    
     # modifier functions
     @abstractmethod
     def read(self, elsClient, payloadType):
@@ -99,10 +113,6 @@ class elsEntity(metaclass=ABCMeta):
         except (requests.HTTPError, requests.RequestException):
             return False
 
-    # access functions
-    def getURI(self):
-        """Returns the URI of the entity instance"""
-        return self.uri
 
 class elsProfile(elsEntity, metaclass=ABCMeta):
     """An abstract class representing an author or affiliation profile in Elsevier's data model"""
