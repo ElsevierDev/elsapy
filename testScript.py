@@ -4,10 +4,7 @@ conFile = open("config.json")
 
 config = json.load(conFile)
 
-myCl = elsClient(config['apikey'])
-
-if (config['insttoken']):
-    myCl.setInstToken(config['insttoken'])
+myCl = elsClient(config['apikey'],config['insttoken'])
 
 myAuth = elsAuthor('http://api.elsevier.com/content/author/AUTHOR_ID:7004367821')       ## author with more than 25 docs
 ##myAuth = elsAuthor('http://api.elsevier.com/content/author/AUTHOR_ID:55934026500')    ## author with less than 25 docs

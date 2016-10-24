@@ -12,10 +12,10 @@ class elsClient:
     numRes = 25                                 ## Max # of records per request
     
     # constructors
-    def __init__(self, apiKey):
-        """Initializes a client with a given API Key."""
+    def __init__(self, apiKey, instToken = ''):
+        """Initializes a client with a given API Key and (optional) institutional token."""
         self.__apiKey = apiKey
-        self.__instToken = ""
+        self.__instToken = instToken
 
     ## TODO: add constructor that also takes instToken
 
