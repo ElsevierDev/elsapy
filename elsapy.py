@@ -72,9 +72,10 @@ class elsClient:
         if r.status_code == 200:
             return json.loads(r.text)
         else:
-            raise (requests.HTTPError, requests.RequestException)
-            print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
-
+            ## TODO: turn into log entry
+            ##print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
+            raise requests.HTTPError
+            
 
 class elsEntity(metaclass=ABCMeta):
     """An abstract class representing an entity in Elsevier's data model"""
@@ -118,6 +119,7 @@ class elsEntity(metaclass=ABCMeta):
             return True
         ## TODO: catch "TypeError: exceptions must derive from BaseException"
         except (requests.HTTPError, requests.RequestException):
+            print ("Error getting an API response.")
             return False
 
 
@@ -153,6 +155,7 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
                 self._doc_list = self._doc_list + [x for x in data["documents"]["abstract-document"]]
             return True
         except (requests.HTTPError, requests.RequestException):
+            print ("Error getting an API response.")
             return False
 
 class elsAuthor(elsProfile):
