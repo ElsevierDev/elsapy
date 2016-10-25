@@ -116,6 +116,7 @@ class elsEntity(metaclass=ABCMeta):
                 self._data = apiResponse[payloadType]
             self.ID = self.data["coredata"]["dc:identifier"]
             return True
+        ## TODO: catch "TypeError: exceptions must derive from BaseException"
         except (requests.HTTPError, requests.RequestException):
             return False
 
