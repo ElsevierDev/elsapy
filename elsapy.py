@@ -14,13 +14,29 @@ class elsClient:
     # constructors
     def __init__(self, apiKey, instToken = ''):
         """Initializes a client with a given API Key and (optional) institutional token."""
-        self.__apiKey = apiKey
-        self.__instToken = instToken
+        self.apiKey = apiKey
+        self.instToken = instToken
 
-    # configuration functions
-    def setInstToken(self, instToken):
-        """Sets an institutional token for customer authentication"""
-        self.__instToken = instToken
+    # properties
+    @property
+    def instToken(self):
+        """Get the instToken for the client instance"""
+        return self._instToken
+
+    @instToken.setter
+    def instToken(self, instToken):
+        """Set the instToken for the client instance"""
+        self._instToken = instToken
+
+    @property
+    def apiKey(self):
+        """Get the apiKey for the client instance"""
+        return self._apiKey
+
+    @apiKey.setter
+    def apiKey(self, apiKey):
+        """Set the apiKey for the client instance"""
+        self._apiKey = apiKey
 
     # access functions
     def getBaseURL(self):
@@ -29,7 +45,7 @@ class elsClient:
 
     def showApiKey(self):
         """Returns the APIKey currently configured for the client"""
-        return self.__apiKey
+        return self._apiKey
 
     # request/response execution functions
     def execRequest(self,URL):
@@ -43,12 +59,12 @@ class elsClient:
 
         ## Construct and execute request
         headers = {
-            "X-ELS-APIKey"  : self.__apiKey,
+            "X-ELS-APIKey"  : self._apiKey,
             "User-Agent"    : self.__userAgent,
             "Accept"        : 'application/json'
             }
-        if self.__instToken:
-            headers["X-ELS-Insttoken"] = self.__instToken
+        if self._instToken:
+            headers["X-ELS-Insttoken"] = self._instToken
         r = requests.get(
             URL,
             headers = headers
@@ -65,10 +81,21 @@ class elsEntity(metaclass=ABCMeta):
 
     # constructors
     @abstractmethod
-    def __init__(self, URI):
+    def __init__(self, uri):
         """Initializes a data entity with its URI"""
-        self.uri = URI
+        self._uri = uri
 
+    # properties
+    @property
+    def uri(self):
+        """Get the URI of the entity instance"""
+        return self._uri
+
+    @uri.setter
+    def uri(self, uri):
+        """Get the URI of the entity instance"""
+        self._uri = uri
+    
     # modifier functions
     @abstractmethod
     def read(self, elsClient, payloadType):
@@ -86,10 +113,6 @@ class elsEntity(metaclass=ABCMeta):
         except (requests.HTTPError, requests.RequestException):
             return False
 
-    # access functions
-    def getURI(self):
-        """Returns the URI of the entity instance"""
-        return self.uri
 
 class elsProfile(elsEntity, metaclass=ABCMeta):
     """An abstract class representing an author or affiliation profile in Elsevier's data model"""
