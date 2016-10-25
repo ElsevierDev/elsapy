@@ -7,7 +7,7 @@ conFile.close()
 
 ## Initialize client
 myCl = elsClient(config['apikey'])
-myCl.instToken = config['insttoken']
+myCl.inst_token = config['insttoken']
 
 ## Initialize and read example author
 myAuth = elsAuthor('http://api.elsevier.com/content/author/AUTHOR_ID:7004367821')       ## author with more than 25 docs

@@ -6,65 +6,70 @@ class elsClient:
 
     # class variables
     __base_url = "https://api.elsevier.com/"    ## Base URL for later use
-    __userAgent = "elsapy.py"                   ## Helps track library use
-    __minReqInterval = 1                        ## Min. request interval in sec
-    __tsLastReq = time.time()                   ## Tracker for throttling
-    numRes = 25                                 ## Max # of records per request
+    __user_agent = "elsapy.py"                   ## Helps track library use
+    __min_req_interval = 1                        ## Min. request interval in sec
+    __ts_last_req = time.time()                   ## Tracker for throttling
+    
     
     # constructors
-    def __init__(self, apiKey, instToken = ''):
+    def __init__(self, api_key, inst_token = '', num_res = 25):
         """Initializes a client with a given API Key and (optional) institutional token."""
-        self.apiKey = apiKey
-        self.instToken = instToken
+        self.api_key = api_key
+        self.inst_token = inst_token
+        self.num_res = num_res
 
     # properties
     @property
-    def instToken(self):
-        """Get the instToken for the client instance"""
-        return self._instToken
-
-    @instToken.setter
-    def instToken(self, instToken):
-        """Set the instToken for the client instance"""
-        self._instToken = instToken
+    def api_key(self):
+        """Get the apiKey for the client instance"""
+        return self._api_key
+    @api_key.setter
+    def api_key(self, api_key):
+        """Set the apiKey for the client instance"""
+        self._api_key = api_key
 
     @property
-    def apiKey(self):
-        """Get the apiKey for the client instance"""
-        return self._apiKey
+    def inst_token(self):
+        """Get the instToken for the client instance"""
+        return self._inst_token
+    @inst_token.setter
+    def inst_token(self, inst_token):
+        """Set the instToken for the client instance"""
+        self._inst_token = inst_token
 
-    @apiKey.setter
-    def apiKey(self, apiKey):
-        """Set the apiKey for the client instance"""
-        self._apiKey = apiKey
+    @property
+    def num_res(self):
+        """Gets the max. number of results to be used by the client instance"""
+        return self._num_res
+    @num_res.setter
+    def num_res(self, numRes):
+        """Sets the max. number of results to be used by the client instance"""
+        self._num_res = numRes
+
 
     # access functions
     def getBaseURL(self):
         """Returns the ELSAPI base URL currently configured for the client"""
         return self.__base_url
 
-    def showApiKey(self):
-        """Returns the APIKey currently configured for the client"""
-        return self._apiKey
-
     # request/response execution functions
     def execRequest(self,URL):
         """Sends the actual request; returns response."""
 
         ## Throttle request, if need be
-        interval = time.time() - self.__tsLastReq
-        if (interval < self.__minReqInterval):
-            time.sleep( self.__minReqInterval - interval )
-        self.__tsLastReq = time.time()
+        interval = time.time() - self.__ts_last_req
+        if (interval < self.__min_req_interval):
+            time.sleep( self.__min_req_interval - interval )
+        self.__ts_last_req = time.time()
 
         ## Construct and execute request
         headers = {
-            "X-ELS-APIKey"  : self._apiKey,
-            "User-Agent"    : self.__userAgent,
+            "X-ELS-APIKey"  : self.api_key,
+            "User-Agent"    : self.__user_agent,
             "Accept"        : 'application/json'
             }
-        if self._instToken:
-            headers["X-ELS-Insttoken"] = self._instToken
+        if self.inst_token:
+            headers["X-ELS-Insttoken"] = self.inst_token
         r = requests.get(
             URL,
             headers = headers
@@ -144,8 +149,8 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
                 data = apiResponse[payloadType]
             docCount = int(data["documents"]["@total"])
             self._doc_list = [x for x in data["documents"]["abstract-document"]]
-            for i in range (0, docCount//elsClient.numRes):
-                apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.numRes+1))
+            for i in range (0, docCount//elsClient.num_res):
+                apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.num_res+1))
                 # TODO: check why response is serialized differently for auth vs affil; refactor
                 if isinstance(apiResponse[payloadType], list):
                     data = apiResponse[payloadType][0]
