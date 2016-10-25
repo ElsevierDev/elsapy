@@ -95,6 +95,12 @@ class elsEntity(metaclass=ABCMeta):
     def uri(self, uri):
         """Get the URI of the entity instance"""
         self._uri = uri
+
+    @property
+    def data(self):
+        """Get the full JSON data for the entity instance"""
+        return self._data
+
     
     # modifier functions
     @abstractmethod
@@ -105,9 +111,9 @@ class elsEntity(metaclass=ABCMeta):
             apiResponse = elsClient.execRequest(self.uri)
             # TODO: check why response is serialized differently for auth vs affil
             if isinstance(apiResponse[payloadType], list):
-                self.data = apiResponse[payloadType][0]
+                self._data = apiResponse[payloadType][0]
             else:
-                self.data = apiResponse[payloadType]
+                self._data = apiResponse[payloadType]
             self.ID = self.data["coredata"]["dc:identifier"]
             return True
         except (requests.HTTPError, requests.RequestException):
