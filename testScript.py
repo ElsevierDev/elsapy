@@ -31,16 +31,16 @@ if (s == "y" or s == "Y"):
 
     ## Read all documents for example author
     if myAuth.readDocs(myCl):
-        print ("myAuth.docList: ")
+        print ("myAuth.doc_list: ")
         i = 0
-        for doc in myAuth.docList:
+        for doc in myAuth.doc_list:
             i += 1
             print (i, ' - ', doc['dc:title'])
 
     ## Read all documents for example affiliation
     if myAff.readDocs(myCl):
-        print ("myAff.docList: ")
+        print ("myAff.doc_list: ")
         i = 0
-        for doc in myAff.docList:
+        for doc in myAff.doc_list:
             i += 1
             print (i, ' - ', doc['dc:title'])

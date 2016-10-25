@@ -124,6 +124,11 @@ class elsEntity(metaclass=ABCMeta):
 class elsProfile(elsEntity, metaclass=ABCMeta):
     """An abstract class representing an author or affiliation profile in Elsevier's data model"""
 
+    @property
+    def doc_list(self):
+        """Get the list of documents for this entity"""
+        return self._doc_list
+
     @abstractmethod
     def readDocs(self, elsClient, payloadType):
         """Fetches the list of documents associated with this entity from
@@ -137,7 +142,7 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
             else:
                 data = apiResponse[payloadType]
             docCount = int(data["documents"]["@total"])
-            self.docList = [x for x in data["documents"]["abstract-document"]]
+            self._doc_list = [x for x in data["documents"]["abstract-document"]]
             for i in range (0, docCount//elsClient.numRes):
                 apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.numRes+1))
                 # TODO: check why response is serialized differently for auth vs affil; refactor
@@ -145,7 +150,7 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
                     data = apiResponse[payloadType][0]
                 else:
                     data = apiResponse[payloadType]
-                self.docList = self.docList + [x for x in data["documents"]["abstract-document"]]
+                self._doc_list = self._doc_list + [x for x in data["documents"]["abstract-document"]]
             return True
         except (requests.HTTPError, requests.RequestException):
             return False
