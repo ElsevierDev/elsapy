@@ -153,17 +153,30 @@ class elsAuthor(elsProfile):
     def __init__(self, URI):
         """Initializes an author given a Scopus author ID"""
         elsEntity.__init__(self, URI)
-        self.firstName = ""
-        self.lastName = ""
+
+    # properties
+    @property
+    def first_name(self):
+        """Gets the author's first name"""
+        return self._first_name;
+
+    @property
+    def last_name(self):
+        """Gets the author's last name"""
+        return self._last_name;     
+
+    @property
+    def full_name(self):
+        """Gets the author's full name"""
+        return self.first_name + " " + self.last_name;     
 
     # modifier functions
     def read(self, elsClient):
         """Reads the JSON representation of the author from ELSAPI.
             Returns True if successful; else, False."""
         if elsProfile.read(self, elsClient, self.__payloadType):
-            self.firstName = self.data[u'author-profile'][u'preferred-name'][u'given-name']
-            self.lastName = self.data[u'author-profile'][u'preferred-name'][u'surname']
-            self.fullName = self.firstName + " " + self.lastName
+            self._first_name = self.data[u'author-profile'][u'preferred-name'][u'given-name']
+            self._last_name = self.data[u'author-profile'][u'preferred-name'][u'surname']
             return True
         else:
             return False
@@ -185,12 +198,18 @@ class elsAffil(elsProfile):
         """Initializes an affiliation given a Scopus affiliation ID"""
         elsEntity.__init__(self, URI)
 
+    # properties
+    @property
+    def name(self):
+        """Gets the affiliation's name"""
+        return self._name;     
+
     # modifier functions
     def read(self, elsClient):
         """Reads the JSON representation of the affiliation from ELSAPI.
              Returns True if successful; else, False."""
         if elsProfile.read(self, elsClient, self.__payloadType):
-            self.name = self.data["affiliation-name"]
+            self._name = self.data["affiliation-name"]
             return True
         else:
             return False
@@ -212,12 +231,18 @@ class elsDoc(elsEntity):
         """Initializes an affiliation given a Scopus author ID"""
         elsEntity.__init__(self, URI)
 
+    # properties
+    @property
+    def title(self):
+        """Gets the document's title"""
+        return self._title;     
+
     # modifier functions
     def read(self, elsClient):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
         if elsEntity.read(self, elsClient, self.__payloadType):
-            self.title = self.data["coredata"]["dc:title"]
+            self._title = self.data["coredata"]["dc:title"]
             return True
         else:
             return False
