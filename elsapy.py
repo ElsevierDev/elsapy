@@ -72,8 +72,8 @@ class elsClient:
         if r.status_code == 200:
             return json.loads(r.text)
         else:
-            ## TODO: turn into log entry
-            ##print ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
+            ## TODO: add error message to exception
+            ## ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
             raise requests.HTTPError
             
 
@@ -117,9 +117,8 @@ class elsEntity(metaclass=ABCMeta):
                 self._data = apiResponse[payloadType]
             self.ID = self.data["coredata"]["dc:identifier"]
             return True
-        ## TODO: catch "TypeError: exceptions must derive from BaseException"
         except (requests.HTTPError, requests.RequestException):
-            print ("Error getting an API response.")
+           ## TODO: read error message, add log entry.
             return False
 
 
@@ -155,7 +154,7 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
                 self._doc_list = self._doc_list + [x for x in data["documents"]["abstract-document"]]
             return True
         except (requests.HTTPError, requests.RequestException):
-            print ("Error getting an API response.")
+            ## TODO: read error message, add log entry.
             return False
 
 class elsAuthor(elsProfile):
