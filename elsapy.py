@@ -1,14 +1,34 @@
-import requests, json, time
+import requests, json, time, logging
 from abc import ABCMeta, abstractmethod
+
+## Following adapted from https://docs.python.org/3/howto/logging-cookbook.html
+# create logger with module name
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+fh = logging.FileHandler('elsapy-%s.log' % time.strftime('%Y%m%d'))
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+
+logger.info("Module loaded.")
 
 class elsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
     # class variables
     __base_url = "https://api.elsevier.com/"    ## Base URL for later use
-    __user_agent = "elsapy.py"                   ## Helps track library use
-    __min_req_interval = 1                        ## Min. request interval in sec
-    __ts_last_req = time.time()                   ## Tracker for throttling
+    __user_agent = "elsapy.py"                  ## Helps track library use
+    __min_req_interval = 1                      ## Min. request interval in sec
+    __ts_last_req = time.time()                 ## Tracker for throttling
     
     
     # constructors
@@ -77,9 +97,7 @@ class elsClient:
         if r.status_code == 200:
             return json.loads(r.text)
         else:
-            ## TODO: add error message to exception
-            ## ("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
-            raise requests.HTTPError
+            raise requests.HTTPError("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
             
 
 class elsEntity(metaclass=ABCMeta):
@@ -121,12 +139,15 @@ class elsEntity(metaclass=ABCMeta):
             else:
                 self._data = apiResponse[payloadType]
             self.ID = self.data["coredata"]["dc:identifier"]
+            logger.info("Data loaded for " + self.uri)
             return True
-        except (requests.HTTPError, requests.RequestException):
-           ## TODO: read error message, add log entry.
+        except requests.HTTPError as e:
+            logger.warning(e.args)
             return False
-
-
+        except requests.RequestException as e:
+            logger.error(e.args)
+            return False
+        
 class elsProfile(elsEntity, metaclass=ABCMeta):
     """An abstract class representing an author or affiliation profile in Elsevier's data model"""
 
@@ -157,9 +178,13 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
                 else:
                     data = apiResponse[payloadType]
                 self._doc_list = self._doc_list + [x for x in data["documents"]["abstract-document"]]
+            logger.info("Documents loaded for " + self.uri)
             return True
-        except (requests.HTTPError, requests.RequestException):
-            ## TODO: read error message, add log entry.
+        except requests.HTTPError as e:
+            logger.warning(e.args)
+            return False
+        except requests.RequestException as e:
+            logger.error(e.args)
             return False
 
 class elsAuthor(elsProfile):
