@@ -1,5 +1,6 @@
-import requests, json, time, logging
+import requests, json, time, logging, urllib
 from abc import ABCMeta, abstractmethod
+from pathlib import Path
 
 ## Following adapted from https://docs.python.org/3/howto/logging-cookbook.html
 # create logger with module name
@@ -90,6 +91,7 @@ class elsClient:
             }
         if self.inst_token:
             headers["X-ELS-Insttoken"] = self.inst_token
+        logger.info('Sending GET request to ' + URL + ' with headers ')
         r = requests.get(
             URL,
             headers = headers
@@ -147,9 +149,21 @@ class elsEntity(metaclass=ABCMeta):
         except requests.RequestException as e:
             logger.error(e.args)
             return False
+
+    def write(self):
+        """Writes the entity to disk (directory /data/)as a .JSON file with the
+             url-encoded URI as the filename"""
+        dataPath = Path('data')
+        if not dataPath.exists():
+                dataPath.mkdir()
+        dumpFile = open('data/'+urllib.parse.quote_plus(self.uri)+'.json', mode='w')
+        json.dump(self.data, dumpFile)
+        dumpFile.close()
+        logger.info('Wrote ' + self.uri + ' to file')
         
 class elsProfile(elsEntity, metaclass=ABCMeta):
-    """An abstract class representing an author or affiliation profile in Elsevier's data model"""
+    """An abstract class representing an author or affiliation profile in
+        Elsevier's data model"""
 
     @property
     def doc_list(self):
