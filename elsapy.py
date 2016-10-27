@@ -141,6 +141,7 @@ class elsEntity(metaclass=ABCMeta):
             else:
                 self._data = apiResponse[payloadType]
             self.ID = self.data["coredata"]["dc:identifier"]
+            ## TODO: check if URI is the same, if necessary update and log warning
             logger.info("Data loaded for " + self.uri)
             return True
         except requests.HTTPError as e:
@@ -209,7 +210,8 @@ class elsAuthor(elsProfile):
 
     # constructors
     def __init__(self, URI):
-        """Initializes an author given a Scopus author ID"""
+        """Initializes an author given a Scopus author URI"""
+        ## TODO: accept plain ID as well
         elsEntity.__init__(self, URI)
 
     # properties
@@ -253,7 +255,8 @@ class elsAffil(elsProfile):
 
     # constructors
     def __init__(self, URI):
-        """Initializes an affiliation given a Scopus affiliation ID"""
+        """Initializes an affiliation given a Scopus affiliation URI"""
+        ## TODO: accept plain ID as well
         elsEntity.__init__(self, URI)
 
     # properties
@@ -286,7 +289,8 @@ class elsDoc(elsEntity):
 
     # constructors
     def __init__(self, URI):
-        """Initializes an affiliation given a Scopus author ID"""
+        """Initializes a document given a Scopus document URI"""
+        ## TODO: accept plain ID as well
         elsEntity.__init__(self, URI)
 
     # properties
