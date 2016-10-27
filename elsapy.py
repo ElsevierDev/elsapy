@@ -91,7 +91,7 @@ class elsClient:
             }
         if self.inst_token:
             headers["X-ELS-Insttoken"] = self.inst_token
-        logger.info('Sending GET request to ' + URL + ' with headers ')
+        logger.info('Sending GET request to ' + URL)
         r = requests.get(
             URL,
             headers = headers
@@ -110,6 +110,7 @@ class elsEntity(metaclass=ABCMeta):
     def __init__(self, uri):
         """Initializes a data entity with its URI"""
         self._uri = uri
+        self._data = None
 
     # properties
     @property
@@ -152,19 +153,31 @@ class elsEntity(metaclass=ABCMeta):
             return False
 
     def write(self):
-        """Writes the entity to disk (directory /data/)as a .JSON file with the
-             url-encoded URI as the filename"""
-        dataPath = Path('data')
-        if not dataPath.exists():
-                dataPath.mkdir()
-        dumpFile = open('data/'+urllib.parse.quote_plus(self.uri)+'.json', mode='w')
-        json.dump(self.data, dumpFile)
-        dumpFile.close()
-        logger.info('Wrote ' + self.uri + ' to file')
+        """If data exists for the entity, writes it to disk as a .JSON file with
+             the url-encoded URI as the filename and returns True. Else, returns
+             False."""
+        if (self.data):
+            dataPath = Path('data')
+            if not dataPath.exists():
+                    dataPath.mkdir()
+            dump_file = open('data/'+urllib.parse.quote_plus(self.uri)+'.json', mode='w')
+            json.dump(self.data, dump_file)
+            dump_file.close()
+            logger.info('Wrote ' + self.uri + ' to file')
+            return True
+        else:
+            logger.warning('No data to write for ' + self.uri)
+            return False
         
 class elsProfile(elsEntity, metaclass=ABCMeta):
     """An abstract class representing an author or affiliation profile in
         Elsevier's data model"""
+
+    def __init__(self, uri):
+        """Initializes a data entity with its URI"""
+        elsEntity.__init__(self, uri)
+        self._doc_list = None
+
 
     @property
     def doc_list(self):
@@ -202,6 +215,30 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
             logger.error(e.args)
             return False
 
+    def writeDocs(self):
+        """If a doclist exists for the entity, writes it to disk as a .JSON file
+             with the url-encoded URI as the filename and returns True. Else,
+             returns False."""
+        if self.doc_list:
+            dataPath = Path('data')
+            if not dataPath.exists():
+                    dataPath.mkdir()
+            dump_file = open('data/'
+                             + urllib.parse.quote_plus(self.uri+'?view=documents')
+                             + '.json', mode='w'
+                             )
+            dump_file.write('[' + json.dumps(self.doc_list[0]))
+            for i in range (1, len(self.doc_list)):
+                dump_file.write(',' + json.dumps(self.doc_list[i]))
+            dump_file.write(']')
+            dump_file.close()
+            logger.info('Wrote ' + self.uri + '?view=documents to file')
+            return True
+        else:
+            logger.warning('No doclist to write for ' + self.uri)
+            return False
+
+
 class elsAuthor(elsProfile):
     """An author of a document in Scopus"""
     
@@ -212,7 +249,7 @@ class elsAuthor(elsProfile):
     def __init__(self, URI):
         """Initializes an author given a Scopus author URI"""
         ## TODO: accept plain ID as well
-        elsEntity.__init__(self, URI)
+        elsProfile.__init__(self, URI)
 
     # properties
     @property
@@ -257,7 +294,7 @@ class elsAffil(elsProfile):
     def __init__(self, URI):
         """Initializes an affiliation given a Scopus affiliation URI"""
         ## TODO: accept plain ID as well
-        elsEntity.__init__(self, URI)
+        elsProfile.__init__(self, URI)
 
     # properties
     @property
