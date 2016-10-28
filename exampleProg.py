@@ -1,3 +1,5 @@
+"""An example program that uses the elsapy module"""
+
 from elsapy import *
 
 ## Load configuration
@@ -9,15 +11,18 @@ conFile.close()
 myCl = elsClient(config['apikey'])
 myCl.inst_token = config['insttoken']
 
-## Initialize and read example author, then write to disk
-myAuth = elsAuthor(uri = 'http://api.elsevier.com/content/author/AUTHOR_ID/7004367821')       ## author with more than 25 docs
+## Author example
+# Initialize author with uri
+myAuth = elsAuthor(uri = 'http://api.elsevier.com/content/author/AUTHOR_ID/7004367821')
+# Read author data, then write to disk
 if myAuth.read(myCl):
     print ("myAuth.full_name: ", myAuth.full_name)
     myAuth.write()
 else:
     print ("Read author failed.")
 
-## Initialize and read example affiliation, then write to disk
+## Affiliation example
+# Initialize affiliation with ID as string
 myAff = elsAffil(affil_id = '60101411')
 if myAff.read(myCl):
     print ("myAff.name: ", myAff.name)
@@ -25,7 +30,8 @@ if myAff.read(myCl):
 else:
     print ("Read affiliation failed.")
 
-## Initialize and read example document, then write to disk
+## Document example
+# Initialize document with ID as integer
 myDoc = elsDoc(scp_id = 84872135457)
 if myDoc.read(myCl):
     print ("myDoc.title: ", myDoc.title)
@@ -33,6 +39,9 @@ if myDoc.read(myCl):
 else:
     print ("Read document failed.")
 
+## Load list of documents from the API into affilation and author objects.
+# Since a document list is retrieved for 25 entries at a time, this is
+#  a potentially lenghty operation - hence the prompt.
 print ("Load documents (Y/N)?")
 s = input('--> ')
 
