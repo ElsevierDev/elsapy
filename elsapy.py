@@ -90,8 +90,7 @@ class elsClient:
         interval = time.time() - self.__ts_last_req
         if (interval < self.__min_req_interval):
             time.sleep( self.__min_req_interval - interval )
-        self.__ts_last_req = time.time()
-
+        
         ## Construct and execute request
         headers = {
             "X-ELS-APIKey"  : self.api_key,
@@ -105,6 +104,7 @@ class elsClient:
             URL,
             headers = headers
             )
+        self.__ts_last_req = time.time()
         if r.status_code == 200:
             return json.loads(r.text)
         else:
