@@ -10,7 +10,7 @@ myCl = elsClient(config['apikey'])
 myCl.inst_token = config['insttoken']
 
 ## Initialize and read example author, then write to disk
-myAuth = elsAuthor('http://api.elsevier.com/content/author/AUTHOR_ID:7004367821')       ## author with more than 25 docs
+myAuth = elsAuthor(uri = 'http://api.elsevier.com/content/author/AUTHOR_ID/7004367821')       ## author with more than 25 docs
 if myAuth.read(myCl):
     print ("myAuth.full_name: ", myAuth.full_name)
     myAuth.write()
@@ -18,7 +18,7 @@ else:
     print ("Read author failed.")
 
 ## Initialize and read example affiliation, then write to disk
-myAff = elsAffil('http://api.elsevier.com/content/affiliation/AFFILIATION_ID:60101411')
+myAff = elsAffil(affil_id = '60101411')
 if myAff.read(myCl):
     print ("myAff.name: ", myAff.name)
     myAff.write()
@@ -26,7 +26,7 @@ else:
     print ("Read affiliation failed.")
 
 ## Initialize and read example document, then write to disk
-myDoc = elsDoc('http://api.elsevier.com/content/abstract/SCOPUS_ID:84872135457')
+myDoc = elsDoc(scp_id = 84872135457)
 if myDoc.read(myCl):
     print ("myDoc.title: ", myDoc.title)
     myDoc.write()   

@@ -2,7 +2,7 @@
     for people who are not primarily programmers, but need to interact with
     publication and citation data from Elsevier products in a programmatic
     manner (e.g. academic researchers).
-    Additional esources:
+    Additional resources:
     * https://github.com/ElsevierDev/elsapy
     * http://dev.elsevier.com
     * http://api.elsevier.com"""
@@ -248,16 +248,23 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
 
 
 class elsAuthor(elsProfile):
-    """An author of a document in Scopus"""
+    """An author of a document in Scopus. Initialize with URI or author ID."""
     
     # static variables
     __payload_type = u'author-retrieval-response'
+    __uri_base = u'http://api.elsevier.com/content/author/AUTHOR_ID/'
 
     # constructors
-    def __init__(self, URI):
-        """Initializes an author given a Scopus author URI"""
-        ## TODO: accept plain ID as well
-        elsProfile.__init__(self, URI)
+    def __init__(self, uri = '', author_id = ''):
+        """Initializes an author given a Scopus author URI or author ID"""
+        if uri and not author_id:
+            elsEntity.__init__(self, uri)
+        elif author_id and not uri:
+            elsEntity.__init__(self, self.__uri_base + str(author_id))
+        elif not uri and not author_id:
+            raise ValueError('No URI or author ID specified')
+        else:
+            raise ValueError('Both URI and author ID specified; just need one.')
 
     # properties
     @property
@@ -291,7 +298,7 @@ class elsAuthor(elsProfile):
 
     def readMetrics(self, elsClient):
         """Reads the bibliographic metrics for this author from api.elsevier.com
-             and updates self.data with them. Returns True if successful; ekse,
+             and updates self.data with them. Returns True if successful; else,
              False."""
         try:
             apiResponse = elsClient.execRequest(self.uri + "?field=document-count,cited-by-count,citation-count,h-index")
@@ -307,16 +314,24 @@ class elsAuthor(elsProfile):
         return True
 
 class elsAffil(elsProfile):
-    """An affilliation (i.e. an institution an author is affiliated with) in Scopus"""
+    """An affilliation (i.e. an institution an author is affiliated with) in Scopus.
+        Initialize with URI or affiliation ID."""
     
     # static variables
     __payload_type = u'affiliation-retrieval-response'
+    __uri_base = u'http://api.elsevier.com/content/affiliation/AFFILIATION_ID/'
 
     # constructors
-    def __init__(self, URI):
-        """Initializes an affiliation given a Scopus affiliation URI"""
-        ## TODO: accept plain ID as well
-        elsProfile.__init__(self, URI)
+    def __init__(self, uri = '', affil_id = ''):
+        """Initializes an affiliation given a Scopus affiliation URI or affiliation ID."""
+        if uri and not affil_id:
+            elsProfile.__init__(self, uri)
+        elif affil_id and not uri:
+            elsProfile.__init__(self, self.__uri_base + str(affil_id))
+        elif not uri and not affil_id:
+            raise ValueError('No URI or affiliation ID specified')
+        else:
+            raise ValueError('Both URI and affiliation ID specified; just need one.')
 
     # properties
     @property
@@ -340,16 +355,24 @@ class elsAffil(elsProfile):
         
 
 class elsDoc(elsEntity):
-    """A document in Scopus"""
+    """A document in Scopus. Initialize with URI or Scopus ID."""
     
     # static variables
     __payload_type = u'abstracts-retrieval-response'
+    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+
 
     # constructors
-    def __init__(self, URI):
-        """Initializes a document given a Scopus document URI"""
-        ## TODO: accept plain ID as well
-        elsEntity.__init__(self, URI)
+    def __init__(self, uri = '', scp_id = ''):
+        """Initializes a document given a Scopus document URI or Scopus ID."""
+        if uri and not scp_id:
+            elsEntity.__init__(self, uri)
+        elif scp_id and not uri:
+            elsEntity.__init__(self, self.__uri_base + str(scp_id))
+        elif not uri and not scp_id:
+            raise ValueError('No URI or Scopus ID specified')
+        else:
+            raise ValueError('Both URI and Scopus ID specified; just need one.')
 
     # properties
     @property
