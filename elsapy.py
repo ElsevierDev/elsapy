@@ -242,7 +242,7 @@ class elsAuthor(elsProfile):
     """An author of a document in Scopus"""
     
     # static variables
-    __payloadType = u'author-retrieval-response'
+    __payload_type = u'author-retrieval-response'
 
     # constructors
     def __init__(self, URI):
@@ -254,46 +254,54 @@ class elsAuthor(elsProfile):
     @property
     def first_name(self):
         """Gets the author's first name"""
-        return self._first_name;
+        return self.data[u'author-profile'][u'preferred-name'][u'given-name']
 
     @property
     def last_name(self):
         """Gets the author's last name"""
-        return self._last_name;     
+        return self.data[u'author-profile'][u'preferred-name'][u'surname']    
 
     @property
     def full_name(self):
         """Gets the author's full name"""
-        return self.first_name + " " + self.last_name;     
+        return self.first_name + " " + self.last_name    
 
     # modifier functions
     def read(self, elsClient):
         """Reads the JSON representation of the author from ELSAPI.
             Returns True if successful; else, False."""
-        if elsProfile.read(self, elsClient, self.__payloadType):
-            self._first_name = self.data[u'author-profile'][u'preferred-name'][u'given-name']
-            self._last_name = self.data[u'author-profile'][u'preferred-name'][u'surname']
+        if elsProfile.read(self, elsClient, self.__payload_type):
             return True
         else:
             return False
 
     def readDocs(self, elsClient):
-        """Fetches the list of documents associated with this author from api.elsevier.com.
-             Returns True if successful; else, False."""
-        return elsProfile.readDocs(self, elsClient, self.__payloadType)
+        """Fetches the list of documents associated with this author from 
+             api.elsevier.com. Returns True if successful; else, False."""
+        return elsProfile.readDocs(self, elsClient, self.__payload_type)
 
     def readMetrics(self, elsClient):
-        """Reads the bibliographic metrics for this author from api.elsevier.com.
-             Returns True if successful; else, False."""
-        ## TODO: implement support for uri + 'field=document-count,cited-by-count,citation-count,h-index'
-        ##  and update/add to self._data
-        return False
+        """Reads the bibliographic metrics for this author from api.elsevier.com
+             and updates self.data with them. Returns True if successful; ekse,
+             False."""
+        try:
+            apiResponse = elsClient.execRequest(self.uri + "?field=document-count,cited-by-count,citation-count,h-index")
+            data = apiResponse[self.__payload_type][0]
+            self._data['coredata']['citation-count'] = data['coredata']['citation-count']
+            self._data['coredata']['cited-by-count'] = data['coredata']['citation-count']
+            self._data['coredata']['document-count'] = data['coredata']['document-count']
+            self._data['h-index'] = data['h-index']
+            logger.info('Added/updated author metrics')
+        except (requests.HTTPError, requests.RequestException) as e:
+            logger.warning(e.args)
+            return False
+        return True
 
 class elsAffil(elsProfile):
     """An affilliation (i.e. an institution an author is affiliated with) in Scopus"""
     
     # static variables
-    __payloadType = u'affiliation-retrieval-response'
+    __payload_type = u'affiliation-retrieval-response'
 
     # constructors
     def __init__(self, URI):
@@ -305,14 +313,13 @@ class elsAffil(elsProfile):
     @property
     def name(self):
         """Gets the affiliation's name"""
-        return self._name;     
+        return self.data["affiliation-name"];     
 
     # modifier functions
     def read(self, elsClient):
         """Reads the JSON representation of the affiliation from ELSAPI.
              Returns True if successful; else, False."""
-        if elsProfile.read(self, elsClient, self.__payloadType):
-            self._name = self.data["affiliation-name"]
+        if elsProfile.read(self, elsClient, self.__payload_type):
             return True
         else:
             return False
@@ -320,14 +327,14 @@ class elsAffil(elsProfile):
     def readDocs(self, elsClient):
         """Fetches the list of documents associated with this affiliation from api.elsevier.com.
              Returns True if successful; else, False."""
-        return elsProfile.readDocs(self, elsClient, self.__payloadType)
+        return elsProfile.readDocs(self, elsClient, self.__payload_type)
         
 
 class elsDoc(elsEntity):
     """A document in Scopus"""
     
     # static variables
-    __payloadType = u'abstracts-retrieval-response'
+    __payload_type = u'abstracts-retrieval-response'
 
     # constructors
     def __init__(self, URI):
@@ -345,7 +352,7 @@ class elsDoc(elsEntity):
     def read(self, elsClient):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        if elsEntity.read(self, elsClient, self.__payloadType):
+        if elsEntity.read(self, elsClient, self.__payload_type):
             self._title = self.data["coredata"]["dc:title"]
             return True
         else:

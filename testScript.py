@@ -25,7 +25,6 @@ if myAff.read(myCl):
 else:
     print ("Read affiliation failed.")
 
-
 ## Initialize and read example document, then write to disk
 myDoc = elsDoc('http://api.elsevier.com/content/abstract/SCOPUS_ID:84872135457')
 if myDoc.read(myCl):
