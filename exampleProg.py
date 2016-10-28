@@ -47,14 +47,16 @@ s = input('--> ')
 
 if (s == "y" or s == "Y"):
 
-    ## Read all documents for example author
+    ## Read all documents for example author, then write to disk
     if myAuth.readDocs(myCl):
         print ("myAuth.doc_list has " + str(len(myAuth.doc_list)) + " items.")
+        myAuth.writeDocs()
     else:
         print ("Read docs for author failed.")
 
-    ## Read all documents for example affiliation
+    ## Read all documents for example affiliation, then write to disk
     if myAff.readDocs(myCl):
         print ("myAff.doc_list has " + str(len(myAff.doc_list)) + " items.")
+        myAff.writeDocs()
     else:
         print ("Read docs for affiliation failed.")
