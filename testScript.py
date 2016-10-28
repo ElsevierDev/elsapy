@@ -41,20 +41,12 @@ if (s == "y" or s == "Y"):
 
     ## Read all documents for example author
     if myAuth.readDocs(myCl):
-        print ("myAuth.doc_list: ")
-        i = 0
-        for doc in myAuth.doc_list:
-            i += 1
-            print (i, ' - ', doc['dc:title'])
+        print ("myAuth.doc_list has " + str(len(myAuth.doc_list)) + " items.")
     else:
         print ("Read docs for author failed.")
 
     ## Read all documents for example affiliation
     if myAff.readDocs(myCl):
-        print ("myAff.doc_list: ")
-        i = 0
-        for doc in myAff.doc_list:
-            i += 1
-            print (i, ' - ', doc['dc:title'])
+        print ("myAff.doc_list has " + str(len(myAff.doc_list)) + " items.")
     else:
         print ("Read docs for affiliation failed.")

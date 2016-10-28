@@ -145,11 +145,8 @@ class elsEntity(metaclass=ABCMeta):
             ## TODO: check if URI is the same, if necessary update and log warning
             logger.info("Data loaded for " + self.uri)
             return True
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.RequestException)as e:
             logger.warning(e.args)
-            return False
-        except requests.RequestException as e:
-            logger.error(e.args)
             return False
 
     def write(self):
@@ -199,20 +196,22 @@ class elsProfile(elsEntity, metaclass=ABCMeta):
             docCount = int(data["documents"]["@total"])
             self._doc_list = [x for x in data["documents"]["abstract-document"]]
             for i in range (0, docCount//elsClient.num_res):
-                apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.num_res+1))
-                # TODO: check why response is serialized differently for auth vs affil; refactor
-                if isinstance(apiResponse[payloadType], list):
-                    data = apiResponse[payloadType][0]
-                else:
-                    data = apiResponse[payloadType]
-                self._doc_list = self._doc_list + [x for x in data["documents"]["abstract-document"]]
+                try:
+                    apiResponse = elsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*elsClient.num_res+1))
+                    # TODO: check why response is serialized differently for auth vs affil; refactor
+                    if isinstance(apiResponse[payloadType], list):
+                        data = apiResponse[payloadType][0]
+                    else:
+                        data = apiResponse[payloadType]
+                    self._doc_list = self._doc_list + [x for x in data["documents"]["abstract-document"]]
+                except  (requests.HTTPError, requests.RequestException) as e:
+                    if hasattr(self, 'doc_list'):       ## We don't want incomplete doc lists
+                        self._doc_list = None
+                    raise e
             logger.info("Documents loaded for " + self.uri)
             return True
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.RequestException) as e:
             logger.warning(e.args)
-            return False
-        except requests.RequestException as e:
-            logger.error(e.args)
             return False
 
     def writeDocs(self):
@@ -282,7 +281,13 @@ class elsAuthor(elsProfile):
         """Fetches the list of documents associated with this author from api.elsevier.com.
              Returns True if successful; else, False."""
         return elsProfile.readDocs(self, elsClient, self.__payloadType)
-        
+
+    def readMetrics(self, elsClient):
+        """Reads the bibliographic metrics for this author from api.elsevier.com.
+             Returns True if successful; else, False."""
+        ## TODO: implement support for uri + 'field=document-count,cited-by-count,citation-count,h-index'
+        ##  and update/add to self._data
+        return False
 
 class elsAffil(elsProfile):
     """An affilliation (i.e. an institution an author is affiliated with) in Scopus"""
