@@ -8,6 +8,7 @@ A Python module for use with api.elsevier.com. Its aim is to make life easier fo
 		* elsAuthor: represent the author of one or more documents in Scopus.
 		* elsAffil: represents an affiliation (i.e. an institution authors are affiliated with) in Scopus
 	* elsDoc: represents a document in Scopus. This document typically is the record of a scholarly article in any of the journals covered in Scopus.
+	Each elsEntity (once read) has a .data attribute, which contains a JSON/dictionary representation of the object's data. Use the object's .data.keys() method to list the first-level keys in the dictionary; drill down from there to explore the data.
 
 More info on the Scopus data model can be read [here](https://dev.elsevier.com/tecdoc_ir_cris_vivo.html). Over time, the module will be expanded to also cover access to ScienceDirect content.
 
