@@ -1,3 +1,12 @@
+"""A Python module for use with api.elsevier.com. Its aim is to make life easier
+    for people who are not primarily programmers, but need to interact with
+    publication and citation data from Elsevier products in a programmatic
+    manner (e.g. academic researchers).
+    Additional esources:
+    * https://github.com/ElsevierDev/elsapy
+    * http://dev.elsevier.com
+    * http://api.elsevier.com"""
+
 import requests, json, time, logging, urllib
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
