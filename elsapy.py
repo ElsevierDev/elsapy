@@ -129,7 +129,7 @@ class elsEntity(metaclass=ABCMeta):
 
     @uri.setter
     def uri(self, uri):
-        """Get the URI of the entity instance"""
+        """Set the URI of the entity instance"""
         self._uri = uri
 
     @property
@@ -389,3 +389,37 @@ class elsDoc(elsEntity):
             return True
         else:
             return False
+
+
+class elsSearch():
+    """Represents a search to one of the search indexes accessible
+         through api.elsevier.com. Returns True if successful; else, False."""
+    def __init__(self, query, index):
+        self.query = query
+        self.index = index
+
+    @property
+    def query(self):
+        """Gets the search query"""
+        return self._query
+
+    @query.setter
+    def query(self, query):
+        """Sets the search query"""
+        self._query = query
+
+    @property
+    def index(self):
+        """Gets the label of the index targeted by the search"""
+        return self._index
+
+    @index.setter
+    def index(self, index):
+        self._index = index
+        """Sets the label of the index targeted by the search"""
+
+    def execute(self, elsClient):
+        """Executes the search, retrieving the default number of results
+            specified for the client."""
+        pass
+        
