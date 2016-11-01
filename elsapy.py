@@ -252,7 +252,7 @@ class elsAuthor(elsProfile):
     
     # static variables
     __payload_type = u'author-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/author/AUTHOR_ID/'
+    __uri_base__ = u'http://api.elsevier.com/content/author/AUTHOR_ID/'
 
     # constructors
     def __init__(self, uri = '', author_id = ''):
@@ -260,7 +260,7 @@ class elsAuthor(elsProfile):
         if uri and not author_id:
             elsEntity.__init__(self, uri)
         elif author_id and not uri:
-            elsEntity.__init__(self, self.__uri_base + str(author_id))
+            elsEntity.__init__(self, self.__uri_base__ + str(author_id))
         elif not uri and not author_id:
             raise ValueError('No URI or author ID specified')
         else:
@@ -319,7 +319,7 @@ class elsAffil(elsProfile):
     
     # static variables
     __payload_type = u'affiliation-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/affiliation/AFFILIATION_ID/'
+    __uri_base__ = u'http://api.elsevier.com/content/affiliation/AFFILIATION_ID/'
 
     # constructors
     def __init__(self, uri = '', affil_id = ''):
@@ -327,7 +327,7 @@ class elsAffil(elsProfile):
         if uri and not affil_id:
             elsProfile.__init__(self, uri)
         elif affil_id and not uri:
-            elsProfile.__init__(self, self.__uri_base + str(affil_id))
+            elsProfile.__init__(self, self.__uri_base__ + str(affil_id))
         elif not uri and not affil_id:
             raise ValueError('No URI or affiliation ID specified')
         else:
@@ -359,7 +359,7 @@ class elsDoc(elsEntity):
     
     # static variables
     __payload_type = u'abstracts-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+    __uri_base__ = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
 
 
     # constructors
@@ -368,7 +368,7 @@ class elsDoc(elsEntity):
         if uri and not scp_id:
             elsEntity.__init__(self, uri)
         elif scp_id and not uri:
-            elsEntity.__init__(self, self.__uri_base + str(scp_id))
+            elsEntity.__init__(self, self.__uri_base__ + str(scp_id))
         elif not uri and not scp_id:
             raise ValueError('No URI or Scopus ID specified')
         else:
@@ -394,9 +394,15 @@ class elsDoc(elsEntity):
 class elsSearch():
     """Represents a search to one of the search indexes accessible
          through api.elsevier.com. Returns True if successful; else, False."""
+
+    # static variables
+    __uri_base__ = u'http://api.elsevier.com/content/search/'
+
     def __init__(self, query, index):
+        """Initializes a search object with a query and target index."""
         self.query = query
         self.index = index
+        self._uri = self.__uri_base__ + self.index + '?query=' + self.query
 
     @property
     def query(self):
@@ -418,8 +424,12 @@ class elsSearch():
         self._index = index
         """Sets the label of the index targeted by the search"""
 
+    @property
+    def uri(self):
+        """Gets the request uri for the search"""
+        return self._uri
+
     def execute(self, elsClient):
         """Executes the search, retrieving the default number of results
             specified for the client."""
-        pass
-        
+        self.apiResponse = elsClient.execRequest(self._uri)
