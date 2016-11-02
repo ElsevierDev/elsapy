@@ -16,4 +16,4 @@ mySrch = elsSearch('heart','scopus')
 
 ## Execute search and show results
 mySrch.execute(myCl)
-print (mySrch.apiResponse)
+#print (mySrch.apiResponse)

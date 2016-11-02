@@ -404,6 +404,7 @@ class elsSearch():
         self.index = index
         self._uri = self.__uri_base__ + self.index + '?query=' + self.query
 
+    # properties
     @property
     def query(self):
         """Gets the search query"""
@@ -425,11 +426,37 @@ class elsSearch():
         """Sets the label of the index targeted by the search"""
 
     @property
+    def results(self):
+        """Gets the results for the search"""
+        return self._results
+
+    @property
+    def tot_num_res(self):
+        """Gets the total number of results that exist in the index for
+            this query. This number might be larger than can be retrieved
+            and stored in a single elsSearch object (i.e. 5,000)."""
+        return self._tot_num_res
+
+    @property
+    def num_res(self):
+        """Gets the number of results for this query that are stored in the 
+            search object. This number might be smaller than the number of 
+            results that exist in the index for the query."""
+        return len(self.results)
+
+    @property
     def uri(self):
         """Gets the request uri for the search"""
         return self._uri
 
     def execute(self, elsClient):
         """Executes the search, retrieving the default number of results
-            specified for the client."""
-        self.apiResponse = elsClient.execRequest(self._uri)
+            specified for the API."""
+        apiResponse = elsClient.execRequest(self._uri)
+        self._tot_num_res = int(apiResponse['search-results']['opensearch:totalResults'])
+        self._results = apiResponse['search-results']['entry']
+
+    def hasAllResults(self):
+        """Returns true if the search object has retrieved all results for the
+            query from the index (i.e. num_res equals tot_num_res)."""
+        return (self.num_res is self.tot_num_res)
