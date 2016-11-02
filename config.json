@@ -1,6 +1,6 @@
 {
-	"note" : "If you are using Git to push a branch of elsapy to a remote repository, run 'git update-index --assume-unchanged config.json
-' first. This will prevent your local copy of this config file, INCLUDING YOUR APIKEY, to become public.",
+	"IMPORTANT NOTE" : "If you are using Git to push a branch of elsapy to a remote repository, run 'git update-index --assume-unchanged config.json
+' first. This will prevent your local copy of this config file, INCLUDING YOUR APIKEY, from becoming public.",
 	"apikey" : "ENTER_APIKEY_HERE",
 	"insttoken" : "ENTER_INSTTOKEN_HERE_IF_YOU_HAVE_ONE_ELSE_DELETE"
 }
