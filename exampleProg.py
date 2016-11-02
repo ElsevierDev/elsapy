@@ -8,11 +8,11 @@ config = json.load(conFile)
 conFile.close()
 
 ## Initialize client
-myCl = elsClient(config['apikey'])
+myCl = ElsClient(config['apikey'])
 myCl.inst_token = config['insttoken']
 
 ## Initialize search object
-mySrch = elsSearch('heart','scopus')
+mySrch = ElsSearch('heart','scopus')
 
 ## Execute search and show results
 mySrch.execute(myCl)
