@@ -35,7 +35,7 @@ class ElsClient:
     """A class that implements a Python interface to api.elsevier.com"""
 
     # class variables
-    __base_url = "https://api.elsevier.com/"    ## Base URL for later use
+    __url_base = "https://api.elsevier.com/"    ## Base URL for later use
     __user_agent = "elsapy.py"                  ## Helps track library use
     __min_req_interval = 1                      ## Min. request interval in sec
     __ts_last_req = time.time()                 ## Tracker for throttling
@@ -396,13 +396,13 @@ class ElsSearch():
          through api.elsevier.com. Returns True if successful; else, False."""
 
     # static variables
-    __uri_base__ = u'http://api.elsevier.com/content/search/'
+    __base_url = u'http://api.elsevier.com/content/search/'
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
         self.query = query
         self.index = index
-        self._uri = self.__uri_base__ + self.index + '?query=' + self.query
+        self._uri = self.__base_url + self.index + '?query=' + self.query
 
     # properties
     @property
