@@ -10,7 +10,8 @@ A Python module for use with api.elsevier.com. Its aim is to make life easier fo
 	* ElsDoc: represents a document in Scopus. This document typically is the record of a scholarly article in any of the journals covered in Scopus.
 
     Each ElsEntity (once read) has a .data attribute, which contains a JSON/dictionary representation of the object's data. Use the object's .data.keys() method to list the first-level keys in the dictionary; drill down from there to explore the data.
-* ElsSearch: represents a search through one of Elsevier's indexes, which can be a document index, an author index, or an affiliation index.
+	ElsAuthor and ElsAffil objects also have a method, .readDocs(), that tells it to retrieve all the publications associated with that author/affiliation from Elsevier's API, and store it as a list attribute, .doc_list. Each entry in the list is a dictionary containing that document's metadata.
+* ElsSearch: represents a search through one of Elsevier's indexes, which can be a document index, an author index, or an affiliation index. Once executed, each search object has a list attribute, .results, that contains the results retrieved from Elsevier's APIs for that search. Each entry in the list is a dictionary containing that result's metadata.
 
 More info on the Scopus data model can be read [here](https://dev.elsevier.com/tecdoc_ir_cris_vivo.html). Over time, the module will be expanded to also cover access to ScienceDirect content.
 
