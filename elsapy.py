@@ -71,6 +71,7 @@ class ElsClient:
     def num_res(self):
         """Gets the max. number of results to be used by the client instance"""
         return self._num_res
+    
     @num_res.setter
     def num_res(self, numRes):
         """Sets the max. number of results to be used by the client instance"""
@@ -449,12 +450,22 @@ class ElsSearch():
         """Gets the request uri for the search"""
         return self._uri
 
-    def execute(self, ElsClient):
-        """Executes the search, retrieving the default number of results
-            specified for the API."""
+    def execute(self, ElsClient, get_all = False):
+        """Executes the search. If get_all = False (default), this retrieves
+            the default number of results specified for the API. If
+            get_all = False, multiple API calls will be made to iteratively get 
+            all results for the search, up to a maximum of 5,000."""
         apiResponse = ElsClient.execRequest(self._uri)
         self._tot_num_res = int(apiResponse['search-results']['opensearch:totalResults'])
         self._results = apiResponse['search-results']['entry']
+        if get_all is True:
+            while (self.num_res < self.tot_num_res) and (self.num_res < 5000):
+                for e in apiResponse['search-results']['link']:
+                    if e['@ref'] == 'next':
+                        next_url = e['@href']
+                apiResponse = ElsClient.execRequest(next_url)
+                self._results += apiResponse['search-results']['entry']
+                        
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the
