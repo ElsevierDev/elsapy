@@ -23,3 +23,6 @@ More info on the Scopus data model can be read [here](https://dev.elsevier.com/t
 ## Quick start
 *   Add your APIkey to config.json
 *   Modify testScript.py to suit your needs
+
+## Disclaimer
+This is not an 'official' SDK and is not guaranteed to always work with Elsevier's APIs, on all platforms, or without eating up all your machine's resources. But we'll do our best to keep it in good shape, are happy to take suggestions for improvements, and are open to collaborations.
