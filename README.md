@@ -26,4 +26,4 @@ More info on the [wiki](https://github.com/ElsevierDev/elsapy/wiki).
 *   Modify testScript.py to suit your needs
 
 ## Disclaimer
-This is not an 'official' SDK and is not guaranteed to always work with Elsevier's APIs, on all platforms, or without eating up all your machine's resources. But we'll do our best to keep it in good shape, are happy to take suggestions for improvements, and are open to collaborations.
+This is not an 'official' SDK and is not guaranteed to always work with Elsevier's APIs, on all platforms, or without eating up all your machine's resources. But we'll do our best to keep it in good shape, are happy to take suggestions for improvements, and are open to collaborations. License info is [here](https://github.com/ElsevierDev/elsapy/blob/master/LICENSE.md).
