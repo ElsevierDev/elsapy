@@ -2,7 +2,7 @@
 
 A Python module for use with api.elsevier.com. Its aim is to make life easier for people who are not primarily programmers, but need to interact with publication and citation data from Elsevier products in a programmatic manner (e.g. academic researchers). The module consists of the following classes:
 
-* ElsClient: represents a client interface to api.elsevier.com.
+* ElsClient: represents a [client interface to api.elsevier.com](https://github.com/ElsevierDev/elsapy/wiki/Establishing-an-API-interface-for-your-program).
 * ElsEntity: an abstract class representing an entity in the Elsevier (specifically, Scopus) data model. ElsEntities can be initialized with a URI, after which they can read their own data from api.elsevier.com through an ElsClient instance. ElsEntity has the following descendants:
 	* elsProf: an abstract class representing a _profiled_ entity in Scopus. This class has two descendants:
 		* ElsAuthor: represent the author of one or more documents in Scopus.
@@ -13,7 +13,7 @@ A Python module for use with api.elsevier.com. Its aim is to make life easier fo
 	ElsAuthor and ElsAffil objects also have a method, .readDocs(), that tells it to retrieve all the publications associated with that author/affiliation from Elsevier's API, and store it as a list attribute, .doc_list. Each entry in the list is a dictionary containing that document's metadata.
 * ElsSearch: represents a search through one of Elsevier's indexes, which can be a document index, an author index, or an affiliation index. Once executed, each search object has a list attribute, .results, that contains the results retrieved from Elsevier's APIs for that search. Each entry in the list is a dictionary containing that result's metadata.
 
-More info on the Scopus data model can be read [here](https://dev.elsevier.com/tecdoc_ir_cris_vivo.html). Over time, the module will be expanded to also cover access to ScienceDirect content.
+More info on the [wiki](https://github.com/ElsevierDev/elsapy/wiki).
 
 ## Prerequisites
 *   An API key from http://dev.elsevier.com
