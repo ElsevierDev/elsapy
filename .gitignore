@@ -1,3 +1,5 @@
+config.json
 *.pyc
 *.log
 /data
+/logs
