@@ -7,6 +7,8 @@
     * http://dev.elsevier.com
     * http://api.elsevier.com"""
 
+__version__ = '0.1'
+
 import requests, json, time, logging, urllib
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
@@ -15,8 +17,12 @@ from pathlib import Path
 # create logger with module name
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+# create log path, if not already there
+logPath = Path('logs')
+if not logPath.exists():
+	logPath.mkdir()
 # create file handler which logs even debug messages
-fh = logging.FileHandler('elsapy-%s.log' % time.strftime('%Y%m%d'))
+fh = logging.FileHandler('logs/elsapy-%s.log' % time.strftime('%Y%m%d'))
 fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
@@ -36,7 +42,7 @@ class ElsClient:
 
     # class variables
     __url_base = "https://api.elsevier.com/"    ## Base URL for later use
-    __user_agent = "elsapy.py"                  ## Helps track library use
+    __user_agent = "elsapy-%sv" % __version__   ## Helps track library use
     __min_req_interval = 1                      ## Min. request interval in sec
     __ts_last_req = time.time()                 ## Tracker for throttling
     
