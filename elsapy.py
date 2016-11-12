@@ -87,7 +87,7 @@ class ElsClient:
     # access functions
     def getBaseURL(self):
         """Returns the ELSAPI base URL currently configured for the client"""
-        return self.__base_url
+        return self.__url_base
 
     # request/response execution functions
     def execRequest(self,URL):
@@ -259,7 +259,7 @@ class ElsAuthor(ElsProfile):
     
     # static variables
     __payload_type = u'author-retrieval-response'
-    __uri_base__ = u'http://api.elsevier.com/content/author/AUTHOR_ID/'
+    __uri_base = u'http://api.elsevier.com/content/author/AUTHOR_ID/'
 
     # constructors
     def __init__(self, uri = '', author_id = ''):
@@ -267,7 +267,7 @@ class ElsAuthor(ElsProfile):
         if uri and not author_id:
             ElsEntity.__init__(self, uri)
         elif author_id and not uri:
-            ElsEntity.__init__(self, self.__uri_base__ + str(author_id))
+            ElsEntity.__init__(self, self.__uri_base + str(author_id))
         elif not uri and not author_id:
             raise ValueError('No URI or author ID specified')
         else:
@@ -326,7 +326,7 @@ class ElsAffil(ElsProfile):
     
     # static variables
     __payload_type = u'affiliation-retrieval-response'
-    __uri_base__ = u'http://api.elsevier.com/content/affiliation/AFFILIATION_ID/'
+    __uri_base = u'http://api.elsevier.com/content/affiliation/AFFILIATION_ID/'
 
     # constructors
     def __init__(self, uri = '', affil_id = ''):
@@ -334,7 +334,7 @@ class ElsAffil(ElsProfile):
         if uri and not affil_id:
             ElsProfile.__init__(self, uri)
         elif affil_id and not uri:
-            ElsProfile.__init__(self, self.__uri_base__ + str(affil_id))
+            ElsProfile.__init__(self, self.__uri_base + str(affil_id))
         elif not uri and not affil_id:
             raise ValueError('No URI or affiliation ID specified')
         else:
@@ -366,7 +366,7 @@ class ElsDoc(ElsEntity):
     
     # static variables
     __payload_type = u'abstracts-retrieval-response'
-    __uri_base__ = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
 
 
     # constructors
@@ -375,7 +375,7 @@ class ElsDoc(ElsEntity):
         if uri and not scp_id:
             ElsEntity.__init__(self, uri)
         elif scp_id and not uri:
-            ElsEntity.__init__(self, self.__uri_base__ + str(scp_id))
+            ElsEntity.__init__(self, self.__uri_base + str(scp_id))
         elif not uri and not scp_id:
             raise ValueError('No URI or Scopus ID specified')
         else:
