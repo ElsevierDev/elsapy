@@ -356,14 +356,29 @@ class ElsAffil(ElsProfile):
             return False
 
     def readDocs(self, ElsClient):
-        """Fetches the list of documents associated with this affiliation from api.elsevier.com.
-             Returns True if successful; else, False."""
+        """Fetches the list of documents associated with this affiliation from
+              api.elsevier.com. Returns True if successful; else, False."""
         return ElsProfile.readDocs(self, ElsClient, self.__payload_type)
-        
+
+
+class AbsDoc(ElsEntity):
+    """A document in Scopus. Initialize with URI or Scopus ID."""
+
+    # static variables
+    __payload_type = u'abstracts-retrieval-response'
+    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+    pass
+
+
+class FullDoc(ElsEntity):
+    """A document in ScienceDirect. Initialize with PII or DOI."""
+    pass
+
 
 class ElsDoc(ElsEntity):
-    """A document in Scopus. Initialize with URI or Scopus ID."""
-    
+    """A document in Scopus and/or ScienceDirect. Initialize with URI, Scopus ID, PII or DOI."""
+
+    ## TODO: move static variables to parent classes, handle name conflict
     # static variables
     __payload_type = u'abstracts-retrieval-response'
     __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
