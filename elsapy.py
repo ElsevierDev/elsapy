@@ -361,28 +361,18 @@ class ElsAffil(ElsProfile):
         return ElsProfile.readDocs(self, ElsClient, self.__payload_type)
 
 
-class AbsDoc(ElsEntity):
-    """A document in Scopus. Initialize with URI or Scopus ID."""
-
-    # static variables
-    __payload_type = u'abstracts-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
-    pass
-
 
 class FullDoc(ElsEntity):
     """A document in ScienceDirect. Initialize with PII or DOI."""
     pass
 
 
-class ElsDoc(ElsEntity):
-    """A document in Scopus and/or ScienceDirect. Initialize with URI, Scopus ID, PII or DOI."""
+class AbsDoc(ElsEntity):
+    """A document in Scopus. Initialize with URI or Scopus ID."""
 
-    ## TODO: move static variables to parent classes, handle name conflict
     # static variables
     __payload_type = u'abstracts-retrieval-response'
     __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
-
 
     # constructors
     def __init__(self, uri = '', scp_id = ''):
@@ -394,13 +384,7 @@ class ElsDoc(ElsEntity):
         elif not uri and not scp_id:
             raise ValueError('No URI or Scopus ID specified')
         else:
-            raise ValueError('Both URI and Scopus ID specified; just need one.')
-
-    # properties
-    @property
-    def title(self):
-        """Gets the document's title"""
-        return self._title;     
+            raise ValueError('Both URI and Scopus ID specified; just need one.')    
 
     # modifier functions
     def read(self, ElsClient):
@@ -411,6 +395,27 @@ class ElsDoc(ElsEntity):
             return True
         else:
             return False
+
+
+class ElsDoc(FullDoc,AbsDoc):
+    """A document in Scopus and/or ScienceDirect. Initialize with URI, Scopus ID, PII or DOI."""
+
+    ## TODO: figure out how to handle name conflicts between parent classes.
+    # static variables
+    __payload_type = u'abstracts-retrieval-response'
+    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+
+    def __init__(self, uri = '', scp_id = ''):
+        if uri and not scp_id:
+            AbsDoc.__init__(self, uri = uri)
+        elif scp_id and not uri:
+            AbsDoc.__init__(self, uri = self.__uri_base + str(scp_id))
+
+    # properties
+    @property
+    def title(self):
+        """Gets the document's title"""
+        return self._title; 
 
 
 class ElsSearch():
