@@ -459,7 +459,7 @@ class ElsSearch():
     def execute(self, ElsClient, get_all = False):
         """Executes the search. If get_all = False (default), this retrieves
             the default number of results specified for the API. If
-            get_all = False, multiple API calls will be made to iteratively get 
+            get_all = True, multiple API calls will be made to iteratively get 
             all results for the search, up to a maximum of 5,000."""
         apiResponse = ElsClient.execRequest(self._uri)
         self._tot_num_res = int(apiResponse['search-results']['opensearch:totalResults'])
