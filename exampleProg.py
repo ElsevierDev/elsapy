@@ -46,6 +46,13 @@ if mySdDoc.read(myCl):
 else:
     print ("Read document failed.")
 
+myDOIDoc = FullDoc(doi = '10.1016/S1525-1578(10)60571-5')
+if myDOIDoc.read(myCl):
+    print ("myDOIDoc.title: ", myDOIDoc.title)
+    myDOIDoc.write()   
+else:
+    print ("Read document failed.")
+
 
 myElsDoc = ElsDoc(scp_id = 84872135457)
 if myScDoc.read(myCl):

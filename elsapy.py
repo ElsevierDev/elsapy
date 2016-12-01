@@ -368,7 +368,7 @@ class FullDoc(ElsEntity):
 
     # static variables
     __payload_type = u'full-text-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/article/PII/'
+    __uri_base = u'http://api.elsevier.com/content/article/'
 
     @property
     def title(self):
@@ -381,16 +381,18 @@ class FullDoc(ElsEntity):
         return self._uri
 
     # constructors
-    def __init__(self, uri = '', sd_pii = ''):
+    def __init__(self, uri = '', sd_pii = '', doi = ''):
         """Initializes a document given a Scopus document URI or Scopus ID."""
-        if uri and not sd_pii:
+        if uri and not sd_pii and not doi:
             ElsEntity.__init__(self, uri)
-        elif sd_pii and not uri:
-            ElsEntity.__init__(self, self.__uri_base + str(sd_pii))
-        elif not uri and not scp_id:
-            raise ValueError('No URI or ScienceDirect PII specified')
+        elif sd_pii and not uri and not doi:
+            ElsEntity.__init__(self, self.__uri_base + 'PII/' + str(sd_pii))
+        elif doi and not uri and not sd_pii:
+            ElsEntity.__init__(self, self.__uri_base + 'DOI/' + str(doi))
+        elif not uri and not scp_id and not doi:
+            raise ValueError('No URI, ScienceDirect PII or DOI specified')
         else:
-            raise ValueError('Both URI and ScienceDirect PII specified; just need one.')
+            raise ValueError('Multiple identifiers specified; just need one.')
 
     # modifier functions
     def read(self, ElsClient):
@@ -444,8 +446,8 @@ class AbsDoc(ElsEntity):
             return False
 
 
-class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to composition? Downside
-                                ##  is data duplication. Insight: multiple inheritance is really
+class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to composition/aggregation? 
+                                ##  Downside is data overlap. Insight: multiple inheritance is really
                                 ##  about merging classes in the _template_ sense of the word:
                                 ##  you're essentially copying blueprints and you need to decide
                                 ##  which parts of which blueprints you keep, or redraw.
@@ -459,17 +461,20 @@ class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to comp
     #__payload_type = u'abstracts-retrieval-response'
     #__uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
 
-    def __init__(self, uri = '', scp_id = '', sd_pii = ''):
-        if uri and not scp_id and not sd_pii:
+    def __init__(self, uri = '', scp_id = '', sd_pii = '', doi = ''):
+        if uri and not scp_id and not sd_pii and not doi:
             print ('Initialize with URI') ## REMOVE
             AbsDoc.__init__(self, uri = uri)
-        elif scp_id and not uri and not sd_pii:
+        elif scp_id and not uri and not sd_pii and not doi:
             print ('Initialize with scp_id') ## REMOVE
             AbsDoc.__init__(self, scp_id = scp_id)
             self._uri = {'scp_id' : self.uri}
-        elif sd_pii and not scp_id and not uri:
+        elif sd_pii and not scp_id and not uri and not doi:
             print ('Initialize with sd_pii') ## REMOVE
             FullDoc.__init__(self, sd_pii = sd_pii)
+        elif doi and not scp_id and not uri and not sd_pii:
+            print ('Initialize with doi') ## REMOVE
+            FullDoc.__init__(self, doi = doi)
 
     # properties
     ## TODO: add property getters/setters that map ElsDoc properties to AbsDoc and FullDoc properties.
