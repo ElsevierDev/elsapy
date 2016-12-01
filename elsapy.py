@@ -153,6 +153,7 @@ class ElsEntity(metaclass=ABCMeta):
         try:
             apiResponse = ElsClient.execRequest(self.uri)
             # TODO: check why response is serialized differently for auth vs affil
+            print (apiResponse.keys()) ##REMOVE
             if isinstance(apiResponse[payloadType], list):
                 self._data = apiResponse[payloadType][0]
             else:
@@ -364,8 +365,43 @@ class ElsAffil(ElsProfile):
 
 class FullDoc(ElsEntity):
     """A document in ScienceDirect. Initialize with PII or DOI."""
-    pass
 
+    # static variables
+    __payload_type = u'full-text-retrieval-response'
+    __uri_base = u'http://api.elsevier.com/content/article/PII/'
+
+    @property
+    def title(self):
+        """Gets the document's title"""
+        return self._title;
+
+    @property
+    def uri(self):
+        """Gets the document's uri"""
+        return self._uri
+
+    # constructors
+    def __init__(self, uri = '', sd_pii = ''):
+        """Initializes a document given a Scopus document URI or Scopus ID."""
+        if uri and not sd_pii:
+            ElsEntity.__init__(self, uri)
+        elif sd_pii and not uri:
+            ElsEntity.__init__(self, self.__uri_base + str(sd_pii))
+        elif not uri and not scp_id:
+            raise ValueError('No URI or ScienceDirect PII specified')
+        else:
+            raise ValueError('Both URI and ScienceDirect PII specified; just need one.')
+
+    # modifier functions
+    def read(self, ElsClient):
+        """Reads the JSON representation of the document from ELSAPI.
+             Returns True if successful; else, False."""
+        print("Executing full request", self.__payload_type) ## REMOVE
+        if ElsEntity.read(self, ElsClient, self.__payload_type):
+            self._title = self.data["coredata"]["dc:title"]
+            return True
+        else:
+            return False
 
 class AbsDoc(ElsEntity):
     """A document in Scopus. Initialize with URI or Scopus ID."""
@@ -373,6 +409,16 @@ class AbsDoc(ElsEntity):
     # static variables
     __payload_type = u'abstracts-retrieval-response'
     __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+
+    @property
+    def title(self):
+        """Gets the document's title"""
+        return self._title;
+
+    @property
+    def uri(self):
+        """Gets the document's uri"""
+        return self._uri
 
     # constructors
     def __init__(self, uri = '', scp_id = ''):
@@ -390,6 +436,7 @@ class AbsDoc(ElsEntity):
     def read(self, ElsClient):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
+        print("Executing abstract request", self.__payload_type) ## REMOVE
         if ElsEntity.read(self, ElsClient, self.__payload_type):
             self._title = self.data["coredata"]["dc:title"]
             return True
@@ -397,25 +444,52 @@ class AbsDoc(ElsEntity):
             return False
 
 
-class ElsDoc(FullDoc,AbsDoc):
+class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to composition? Downside
+                                ##  is data duplication. Insight: multiple inheritance is really
+                                ##  about merging classes in the _template_ sense of the word:
+                                ##  you're essentially copying blueprints and you need to decide
+                                ##  which parts of which blueprints you keep, or redraw.
     """A document in Scopus and/or ScienceDirect. Initialize with URI, Scopus ID, PII or DOI."""
 
     ## TODO: figure out how to handle name conflicts between parent classes.
+    ## IDEA: implement uri dictionary with name 'uri' that refers to uris in parent classes. This
+    ##  allows the child elsdoc to know if it has an FullDoc or AbsDoc parent or both
+    
     # static variables
-    __payload_type = u'abstracts-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+    #__payload_type = u'abstracts-retrieval-response'
+    #__uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
 
-    def __init__(self, uri = '', scp_id = ''):
-        if uri and not scp_id:
+    def __init__(self, uri = '', scp_id = '', sd_pii = ''):
+        if uri and not scp_id and not sd_pii:
+            print ('Initialize with URI') ## REMOVE
             AbsDoc.__init__(self, uri = uri)
-        elif scp_id and not uri:
-            AbsDoc.__init__(self, uri = self.__uri_base + str(scp_id))
+        elif scp_id and not uri and not sd_pii:
+            print ('Initialize with scp_id') ## REMOVE
+            AbsDoc.__init__(self, scp_id = scp_id)
+            self._uri = {'scp_id' : self.uri}
+        elif sd_pii and not scp_id and not uri:
+            print ('Initialize with sd_pii') ## REMOVE
+            FullDoc.__init__(self, sd_pii = sd_pii)
 
     # properties
+    ## TODO: add property getters/setters that map ElsDoc properties to AbsDoc and FullDoc properties.
     @property
     def title(self):
         """Gets the document's title"""
-        return self._title; 
+        return self._title;
+
+    @property
+    def uri(self):
+        """Gets the document's uri dictionary"""
+        return self._uri
+
+    ## TODO: write .read() that overrides and instead appropriately invokes .read() in parent
+    ##  classes, depending on which uris exist in uri dictionary
+    def read(self, ElsClient):
+        """Reads the JSON representation of the document from ELSAPI.
+             Returns True if successful; else, False."""
+        pass
+
 
 
 class ElsSearch():
@@ -479,7 +553,7 @@ class ElsSearch():
     def execute(self, ElsClient, get_all = False):
         """Executes the search. If get_all = False (default), this retrieves
             the default number of results specified for the API. If
-            get_all = False, multiple API calls will be made to iteratively get 
+            get_all = True, multiple API calls will be made to iteratively get 
             all results for the search, up to a maximum of 5,000."""
         apiResponse = ElsClient.execRequest(self._uri)
         self._tot_num_res = int(apiResponse['search-results']['opensearch:totalResults'])
@@ -490,8 +564,7 @@ class ElsSearch():
                     if e['@ref'] == 'next':
                         next_url = e['@href']
                 apiResponse = ElsClient.execRequest(next_url)
-                self._results += apiResponse['search-results']['entry']
-                        
+                self._results += apiResponse['search-results']['entry']         
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the
