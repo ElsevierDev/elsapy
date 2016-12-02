@@ -57,21 +57,18 @@ else:
 elsDoc_scp = ElsDoc(scp_id = 84872135457)
 if elsDoc_scp.read(myCl):
     print ("elsDoc_scp.title: ", elsDoc_scp.title)
-    elsDoc_scp.write()   
 else:
     print ("Read document failed.")
 
 elsDoc_pii = ElsDoc(sd_pii = 'S1674927814000082')
 if elsDoc_pii.read(myCl):
     print ("elsDoc_pii.title: ", elsDoc_pii.title)
-    elsDoc_pii.write()   
 else:
     print ("Read document failed.")
 
 elsDoc_doi = ElsDoc(doi = '10.1016/S1525-1578(10)60571-5')
 if elsDoc_doi.read(myCl):
     print ("elsDoc_doi.title: ", elsDoc_doi.title)
-    elsDoc_doi.write()   
 else:
     print ("Read document failed.")
 

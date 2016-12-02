@@ -446,11 +446,7 @@ class AbsDoc(ElsEntity):
             return False
 
 
-class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to composition/aggregation? 
-                                ##  Downside is data overlap. Insight: multiple inheritance is really
-                                ##  about merging classes in the _template_ sense of the word:
-                                ##  you're essentially copying blueprints and you need to decide
-                                ##  which parts of which blueprints you keep, or redraw.
+class ElsDoc():
     """A document in Scopus and/or ScienceDirect. Initialize with Scopus ID, PII or DOI; or with a
         dictionary containing multiple api.elsevier.com URIs."""
 
@@ -459,48 +455,50 @@ class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to comp
     ##  allows the child elsdoc to know if it has an FullDoc or AbsDoc parent or both
     
     # static variables
-    #__payload_type = u'abstracts-retrieval-response'
-    #__uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
 
-    def __init__(self, uri_dict = '', scp_id = '', sd_pii = '', doi = ''):
-        if uri and not scp_id and not sd_pii and not doi:
+    def __init__(self, uris = '', scp_id = '', sd_pii = '', doi = ''):
+        if uris and not scp_id and not sd_pii and not doi:
             print ('Initialize with URI') ## REMOVE
-            self._uri = uri_dict
-        ## The following 'elif' clauses leverage inheritance to transform
-        ##  'bare' IDs to corresponding URIs
-        elif scp_id and not uri and not sd_pii and not doi:
+            self._uris = uris
+        ## The following 'elif' clauses leverage other classes to transform
+        ##  'bare' IDs to corresponding URIs before storing them in the URI
+        ##  dictionary
+        elif scp_id and not uris and not sd_pii and not doi:
             print ('Initialize with scp_id') ## REMOVE
-            AbsDoc.__init__(self, scp_id = scp_id)
-            self._uri = {'scp_id' : self.uri}
-        elif sd_pii and not scp_id and not uri and not doi:
+            self._uris = {'scp_id' : AbsDoc(scp_id = scp_id).uri}
+        elif sd_pii and not scp_id and not uris and not doi:
             print ('Initialize with sd_pii') ## REMOVE
-            FullDoc.__init__(self, sd_pii = sd_pii)
-            self._uri = {'sd_pii' : self.uri}
-        elif doi and not scp_id and not uri and not sd_pii:
+            self._uris = {'sd_pii' : FullDoc(sd_pii = sd_pii).uri}
+        elif doi and not scp_id and not uris and not sd_pii:
             print ('Initialize with doi') ## REMOVE
-            FullDoc.__init__(self, doi = doi)
-            self._uri = {'doi' : self.uri}
+            self._uris = {'doi' : FullDoc(doi = doi).uri}
 
     # properties
     ## TODO: add property getters/setters that map ElsDoc properties to AbsDoc and FullDoc properties.
     @property
     def title(self):
         """Gets the document's title"""
-        return self._title;
+        pass #return self._title;
 
     @property
-    def uri(self):
+    def uris(self):
         """Gets the document's uri dictionary"""
-        return self._uri
+        return self._uris
 
     ## TODO: write .read() that overrides and instead appropriately invokes .read() in parent
     ##  classes, depending on which uris exist in uri dictionary
     def read(self, ElsClient):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        pass
-
-
+        if 'scp_id' in self.uris:
+            self._absDoc = AbsDoc(uri = self.uris['scp_id'])
+            return self._absDoc.read(ElsClient)
+        if ('sd_pii' in self.uris):
+            self._fullDoc = FullDoc(uri = self.uris['sd_pii'])
+            return self._fullDoc.read(ElsClient)
+        elif 'doi' in self.uris:
+            self._fullDoc = FullDoc(uri = self.uris['doi'])
+            return self._fullDoc.read(ElsClient)            
 
 class ElsSearch():
     """Represents a search to one of the search indexes accessible
