@@ -451,7 +451,8 @@ class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to comp
                                 ##  about merging classes in the _template_ sense of the word:
                                 ##  you're essentially copying blueprints and you need to decide
                                 ##  which parts of which blueprints you keep, or redraw.
-    """A document in Scopus and/or ScienceDirect. Initialize with URI, Scopus ID, PII or DOI."""
+    """A document in Scopus and/or ScienceDirect. Initialize with Scopus ID, PII or DOI; or with a
+        dictionary containing multiple api.elsevier.com URIs."""
 
     ## TODO: figure out how to handle name conflicts between parent classes.
     ## IDEA: implement uri dictionary with name 'uri' that refers to uris in parent classes. This
@@ -461,10 +462,12 @@ class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to comp
     #__payload_type = u'abstracts-retrieval-response'
     #__uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
 
-    def __init__(self, uri = '', scp_id = '', sd_pii = '', doi = ''):
+    def __init__(self, uri_dict = '', scp_id = '', sd_pii = '', doi = ''):
         if uri and not scp_id and not sd_pii and not doi:
             print ('Initialize with URI') ## REMOVE
-            AbsDoc.__init__(self, uri = uri)
+            self._uri = uri_dict
+        ## The following 'elif' clauses leverage inheritance to transform
+        ##  'bare' IDs to corresponding URIs
         elif scp_id and not uri and not sd_pii and not doi:
             print ('Initialize with scp_id') ## REMOVE
             AbsDoc.__init__(self, scp_id = scp_id)
