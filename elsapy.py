@@ -410,7 +410,7 @@ class AbsDoc(ElsEntity):
 
     # static variables
     __payload_type = u'abstracts-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/abstract/SCOPUS_ID/'
+    __uri_base = u'http://api.elsevier.com/content/abstract/'
 
     @property
     def title(self):
@@ -428,7 +428,7 @@ class AbsDoc(ElsEntity):
         if uri and not scp_id:
             ElsEntity.__init__(self, uri)
         elif scp_id and not uri:
-            ElsEntity.__init__(self, self.__uri_base + str(scp_id))
+            ElsEntity.__init__(self, self.__uri_base + 'SCOPUS_ID/' + str(scp_id))
         elif not uri and not scp_id:
             raise ValueError('No URI or Scopus ID specified')
         else:
