@@ -32,32 +32,46 @@ myCl.inst_token = config['insttoken']
 
 ## Document example
 # Initialize document with ID as integer
-myScDoc = AbsDoc(scp_id = 84872135457)
-if myScDoc.read(myCl):
-    print ("myScDoc.title: ", myScDoc.title)
-    myScDoc.write()   
+scpDoc = AbsDoc(scp_id = 84872135457)
+if scpDoc.read(myCl):
+    print ("scpDoc.title: ", scpDoc.title)
+    scpDoc.write()   
 else:
     print ("Read document failed.")
 
-mySdDoc = FullDoc(sd_pii = 'S1674927814000082')
-if mySdDoc.read(myCl):
-    print ("mySdDoc.title: ", mySdDoc.title)
-    mySdDoc.write()   
+piiDoc = FullDoc(sd_pii = 'S1674927814000082')
+if piiDoc.read(myCl):
+    print ("piiDoc.title: ", piiDoc.title)
+    piiDoc.write()   
 else:
     print ("Read document failed.")
 
-myDOIDoc = FullDoc(doi = '10.1016/S1525-1578(10)60571-5')
-if myDOIDoc.read(myCl):
-    print ("myDOIDoc.title: ", myDOIDoc.title)
-    myDOIDoc.write()   
+doiDoc = FullDoc(doi = '10.1016/S1525-1578(10)60571-5')
+if doiDoc.read(myCl):
+    print ("doiDoc.title: ", doiDoc.title)
+    doiDoc.write()   
 else:
     print ("Read document failed.")
 
 
-myElsDoc = ElsDoc(scp_id = 84872135457)
-if myScDoc.read(myCl):
-    print ("myElsDoc.title: ", myElsDoc.title)
-    myElsDoc.write()   
+elsDoc_scp = ElsDoc(scp_id = 84872135457)
+if elsDoc_scp.read(myCl):
+    print ("elsDoc_scp.title: ", elsDoc_scp.title)
+    elsDoc_scp.write()   
+else:
+    print ("Read document failed.")
+
+elsDoc_pii = ElsDoc(sd_pii = 'S1674927814000082')
+if elsDoc_pii.read(myCl):
+    print ("elsDoc_pii.title: ", elsDoc_pii.title)
+    elsDoc_pii.write()   
+else:
+    print ("Read document failed.")
+
+elsDoc_doi = ElsDoc(doi = '10.1016/S1525-1578(10)60571-5')
+if elsDoc_doi.read(myCl):
+    print ("elsDoc_doi.title: ", elsDoc_doi.title)
+    elsDoc_doi.write()   
 else:
     print ("Read document failed.")
 

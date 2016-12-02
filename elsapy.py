@@ -472,9 +472,11 @@ class ElsDoc(AbsDoc,FullDoc):   ## TODO: perhaps change from inheritance to comp
         elif sd_pii and not scp_id and not uri and not doi:
             print ('Initialize with sd_pii') ## REMOVE
             FullDoc.__init__(self, sd_pii = sd_pii)
+            self._uri = {'sd_pii' : self.uri}
         elif doi and not scp_id and not uri and not sd_pii:
             print ('Initialize with doi') ## REMOVE
             FullDoc.__init__(self, doi = doi)
+            self._uri = {'doi' : self.uri}
 
     # properties
     ## TODO: add property getters/setters that map ElsDoc properties to AbsDoc and FullDoc properties.
