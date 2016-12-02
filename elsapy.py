@@ -153,7 +153,6 @@ class ElsEntity(metaclass=ABCMeta):
         try:
             apiResponse = ElsClient.execRequest(self.uri)
             # TODO: check why response is serialized differently for auth vs affil
-            print (apiResponse.keys()) ##REMOVE
             if isinstance(apiResponse[payloadType], list):
                 self._data = apiResponse[payloadType][0]
             else:
@@ -398,7 +397,6 @@ class FullDoc(ElsEntity):
     def read(self, ElsClient):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        print("Executing full request", self.__payload_type) ## REMOVE
         if ElsEntity.read(self, ElsClient, self.__payload_type):
             self._title = self.data["coredata"]["dc:title"]
             return True
@@ -438,7 +436,6 @@ class AbsDoc(ElsEntity):
     def read(self, ElsClient):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        print("Executing abstract request", self.__payload_type) ## REMOVE
         if ElsEntity.read(self, ElsClient, self.__payload_type):
             self._title = self.data["coredata"]["dc:title"]
             return True
@@ -458,19 +455,15 @@ class ElsDoc():
 
     def __init__(self, uris = '', scp_id = '', sd_pii = '', doi = ''):
         if uris and not scp_id and not sd_pii and not doi:
-            print ('Initialize with URI') ## REMOVE
             self._uris = uris
         ## The following 'elif' clauses leverage other classes to transform
         ##  'bare' IDs to corresponding URIs before storing them in the URI
         ##  dictionary
         elif scp_id and not uris and not sd_pii and not doi:
-            print ('Initialize with scp_id') ## REMOVE
             self._uris = {'scp_id' : AbsDoc(scp_id = scp_id).uri}
         elif sd_pii and not scp_id and not uris and not doi:
-            print ('Initialize with sd_pii') ## REMOVE
             self._uris = {'sd_pii' : FullDoc(sd_pii = sd_pii).uri}
         elif doi and not scp_id and not uris and not sd_pii:
-            print ('Initialize with doi') ## REMOVE
             self._uris = {'doi' : FullDoc(doi = doi).uri}
 
     # properties
