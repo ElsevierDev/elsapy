@@ -479,10 +479,11 @@ class ElsDoc():
         return self._uris
 
     ## TODO: write .read() that overrides and instead appropriately invokes .read() in parent
-    ##  classes, depending on which uris exist in uri dictionary
+    ##  classes, 
     def read(self, ElsClient):
-        """Reads the JSON representation of the document from ELSAPI.
-             Returns True if successful; else, False."""
+        """Reads JSON representations of the document from ELSAPI for whichever
+            URIs exist in the URI dictionary. Returns True if successful; else,
+            False."""
         if 'scp_id' in self.uris:
             self._absDoc = AbsDoc(uri = self.uris['scp_id'])
             return self._absDoc.read(ElsClient)
