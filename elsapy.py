@@ -463,7 +463,7 @@ class ElsDoc():
             self._uris = {'doi' : FullDoc(doi = doi).uri}
 
     # properties
-    ## TODO: add property getters/setters that map ElsDoc properties to AbsDoc and FullDoc properties.
+    ## TODO: add more property getters/setters that map ElsDoc properties to AbsDoc and FullDoc properties.
     @property
     def title(self):
         """Gets the document's title. The title from the full-text record takes precedence over
