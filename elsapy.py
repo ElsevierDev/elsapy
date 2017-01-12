@@ -4,8 +4,8 @@
     manner (e.g. academic researchers).
     Additional resources:
     * https://github.com/ElsevierDev/elsapy
-    * http://dev.elsevier.com
-    * http://api.elsevier.com"""
+    * https://dev.elsevier.com
+    * https://api.elsevier.com"""
 
 __version__ = '0.1'
 
@@ -259,7 +259,7 @@ class ElsAuthor(ElsProfile):
     
     # static variables
     __payload_type = u'author-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/author/AUTHOR_ID/'
+    __uri_base = u'https://api.elsevier.com/content/author/AUTHOR_ID/'
 
     # constructors
     def __init__(self, uri = '', author_id = ''):
@@ -326,7 +326,7 @@ class ElsAffil(ElsProfile):
     
     # static variables
     __payload_type = u'affiliation-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/affiliation/AFFILIATION_ID/'
+    __uri_base = u'https://api.elsevier.com/content/affiliation/AFFILIATION_ID/'
 
     # constructors
     def __init__(self, uri = '', affil_id = ''):
@@ -367,7 +367,7 @@ class FullDoc(ElsEntity):
 
     # static variables
     __payload_type = u'full-text-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/article/'
+    __uri_base = u'https://api.elsevier.com/content/article/'
 
     @property
     def title(self):
@@ -408,7 +408,7 @@ class AbsDoc(ElsEntity):
 
     # static variables
     __payload_type = u'abstracts-retrieval-response'
-    __uri_base = u'http://api.elsevier.com/content/abstract/'
+    __uri_base = u'https://api.elsevier.com/content/abstract/'
 
     @property
     def title(self):
@@ -502,7 +502,7 @@ class ElsSearch():
          through api.elsevier.com. Returns True if successful; else, False."""
 
     # static variables
-    __base_url = u'http://api.elsevier.com/content/search/'
+    __base_url = u'https://api.elsevier.com/content/search/'
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""

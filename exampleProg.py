@@ -11,24 +11,24 @@ conFile.close()
 myCl = ElsClient(config['apikey'])
 myCl.inst_token = config['insttoken']
 
-#### Author example
-### Initialize author with uri
-##myAuth = ElsAuthor(uri = 'http://api.elsevier.com/content/author/AUTHOR_ID/7004367821')
-### Read author data, then write to disk
-##if myAuth.read(myCl):
-##    print ("myAuth.full_name: ", myAuth.full_name)
-##    myAuth.write()
-##else:
-##    print ("Read author failed.")
-##
-#### Affiliation example
-### Initialize affiliation with ID as string
-##myAff = ElsAffil(affil_id = '60101411')
-##if myAff.read(myCl):
-##    print ("myAff.name: ", myAff.name)
-##    myAff.write()
-##else:
-##    print ("Read affiliation failed.")
+## Author example
+# Initialize author with uri
+myAuth = ElsAuthor(uri = 'https://api.elsevier.com/content/author/AUTHOR_ID/7004367821')
+# Read author data, then write to disk
+if myAuth.read(myCl):
+    print ("myAuth.full_name: ", myAuth.full_name)
+    myAuth.write()
+else:
+    print ("Read author failed.")
+
+## Affiliation example
+# Initialize affiliation with ID as string
+myAff = ElsAffil(affil_id = '60101411')
+if myAff.read(myCl):
+    print ("myAff.name: ", myAff.name)
+    myAff.write()
+else:
+    print ("Read affiliation failed.")
 
 ## Document example
 # Initialize document with ID as integer
