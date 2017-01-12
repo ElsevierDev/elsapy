@@ -13,7 +13,7 @@ myCl.inst_token = config['insttoken']
 
 ## Author example
 # Initialize author with uri
-myAuth = ElsAuthor(uri = 'http://api.elsevier.com/content/author/AUTHOR_ID/7004367821')
+myAuth = ElsAuthor(uri = 'https://api.elsevier.com/content/author/AUTHOR_ID/7004367821')
 # Read author data, then write to disk
 if myAuth.read(myCl):
     print ("myAuth.full_name: ", myAuth.full_name)
