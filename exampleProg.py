@@ -30,14 +30,31 @@ if myAff.read(myCl):
 else:
     print ("Read affiliation failed.")
 
-## Document example
+## Scopus (Abtract) document example
 # Initialize document with ID as integer
-myDoc = ElsDoc(scp_id = 84872135457)
-if myDoc.read(myCl):
-    print ("myDoc.title: ", myDoc.title)
-    myDoc.write()   
+scpDoc = AbsDoc(scp_id = 84872135457)
+if scpDoc.read(myCl):
+    print ("scpDoc.title: ", scpDoc.title)
+    scpDoc.write()   
 else:
     print ("Read document failed.")
+
+## ScienceDirect (full-text) document example using PII
+piiDoc = FullDoc(sd_pii = 'S1674927814000082')
+if piiDoc.read(myCl):
+    print ("piiDoc.title: ", piiDoc.title)
+    piiDoc.write()   
+else:
+    print ("Read document failed.")
+
+## ScienceDirect (full-text) document example using DOI
+doiDoc = FullDoc(doi = '10.1016/S1525-1578(10)60571-5')
+if doiDoc.read(myCl):
+    print ("doiDoc.title: ", doiDoc.title)
+    doiDoc.write()   
+else:
+    print ("Read document failed.")
+
 
 ## Load list of documents from the API into affilation and author objects.
 # Since a document list is retrieved for 25 entries at a time, this is

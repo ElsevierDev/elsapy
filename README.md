@@ -7,10 +7,13 @@ A Python module for use with api.elsevier.com. Its aim is to make life easier fo
 	* elsProf: an abstract class representing a _profiled_ entity in Scopus. This class has two descendants:
 		* ElsAuthor: represent the author of one or more documents in Scopus.
 		* ElsAffil: represents an affiliation (i.e. an institution authors are affiliated with) in Scopus
-	* ElsDoc: represents a document in Scopus. This document typically is the record of a scholarly article in any of the journals covered in Scopus.
+	* AbsDoc: represents a document in Scopus (i.e. abstract only). This document typically is the record of a scholarly article in any of the journals covered in Scopus.
+	* FullDoc: represents a document in ScienceDirect (i.e. full text). This document is the full-text version of a scholarly article or book chapter from a journal published by Elsevier.
 
-    Each ElsEntity (once read) has a .data attribute, which contains a JSON/dictionary representation of the object's data. Use the object's .data.keys() method to list the first-level keys in the dictionary; drill down from there to explore the data.
+	Each ElsEntity (once read) has a .data attribute, which contains a JSON/dictionary representation of the object's data. Use the object's .data.keys() method to list the first-level keys in the dictionary; drill down from there to explore the data.
+
 	ElsAuthor and ElsAffil objects also have a method, .readDocs(), that tells it to retrieve all the publications associated with that author/affiliation from Elsevier's API, and store it as a list attribute, .doc_list. Each entry in the list is a dictionary containing that document's metadata.
+* ElsDoc: represents an Elsevier document. It is an aggregation of the AbsDoc and FullDoc classes, alllowing an article that is published by Elsevier on ScienceDirect _and_ indexed in Scopus, to be treated as a single object in a somewhat polymorphous fashion. It has a read method, just like any ElsEntity class.
 * ElsSearch: represents a search through one of Elsevier's indexes, which can be a document index, an author index, or an affiliation index. Once executed, each search object has a list attribute, .results, that contains the results retrieved from Elsevier's APIs for that search. Each entry in the list is a dictionary containing that result's metadata.
 
 More info on the [wiki](https://github.com/ElsevierDev/elsapy/wiki).

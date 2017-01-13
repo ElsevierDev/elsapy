@@ -356,18 +356,69 @@ class ElsAffil(ElsProfile):
             return False
 
     def readDocs(self, ElsClient):
-        """Fetches the list of documents associated with this affiliation from api.elsevier.com.
-             Returns True if successful; else, False."""
+        """Fetches the list of documents associated with this affiliation from
+              api.elsevier.com. Returns True if successful; else, False."""
         return ElsProfile.readDocs(self, ElsClient, self.__payload_type)
-        
 
-class ElsDoc(ElsEntity):
+
+
+class FullDoc(ElsEntity):
+    """A document in ScienceDirect. Initialize with PII or DOI."""
+
+    # static variables
+    __payload_type = u'full-text-retrieval-response'
+    __uri_base = u'https://api.elsevier.com/content/article/'
+
+    @property
+    def title(self):
+        """Gets the document's title"""
+        return self._title;
+
+    @property
+    def uri(self):
+        """Gets the document's uri"""
+        return self._uri
+
+    # constructors
+    def __init__(self, uri = '', sd_pii = '', doi = ''):
+        """Initializes a document given a Scopus document URI or Scopus ID."""
+        if uri and not sd_pii and not doi:
+            ElsEntity.__init__(self, uri)
+        elif sd_pii and not uri and not doi:
+            ElsEntity.__init__(self, self.__uri_base + 'PII/' + str(sd_pii))
+        elif doi and not uri and not sd_pii:
+            ElsEntity.__init__(self, self.__uri_base + 'DOI/' + str(doi))
+        elif not uri and not scp_id and not doi:
+            raise ValueError('No URI, ScienceDirect PII or DOI specified')
+        else:
+            raise ValueError('Multiple identifiers specified; just need one.')
+
+    # modifier functions
+    def read(self, ElsClient):
+        """Reads the JSON representation of the document from ELSAPI.
+             Returns True if successful; else, False."""
+        if ElsEntity.read(self, ElsClient, self.__payload_type):
+            self._title = self.data["coredata"]["dc:title"]
+            return True
+        else:
+            return False
+
+class AbsDoc(ElsEntity):
     """A document in Scopus. Initialize with URI or Scopus ID."""
-    
+
     # static variables
     __payload_type = u'abstracts-retrieval-response'
-    __uri_base = u'https://api.elsevier.com/content/abstract/SCOPUS_ID/'
+    __uri_base = u'https://api.elsevier.com/content/abstract/'
 
+    @property
+    def title(self):
+        """Gets the document's title"""
+        return self._title;
+
+    @property
+    def uri(self):
+        """Gets the document's uri"""
+        return self._uri
 
     # constructors
     def __init__(self, uri = '', scp_id = ''):
@@ -375,17 +426,11 @@ class ElsDoc(ElsEntity):
         if uri and not scp_id:
             ElsEntity.__init__(self, uri)
         elif scp_id and not uri:
-            ElsEntity.__init__(self, self.__uri_base + str(scp_id))
+            ElsEntity.__init__(self, self.__uri_base + 'SCOPUS_ID/' + str(scp_id))
         elif not uri and not scp_id:
             raise ValueError('No URI or Scopus ID specified')
         else:
-            raise ValueError('Both URI and Scopus ID specified; just need one.')
-
-    # properties
-    @property
-    def title(self):
-        """Gets the document's title"""
-        return self._title;     
+            raise ValueError('Both URI and Scopus ID specified; just need one.')    
 
     # modifier functions
     def read(self, ElsClient):
@@ -470,8 +515,7 @@ class ElsSearch():
                     if e['@ref'] == 'next':
                         next_url = e['@href']
                 apiResponse = ElsClient.execRequest(next_url)
-                self._results += apiResponse['search-results']['entry']
-                        
+                self._results += apiResponse['search-results']['entry']         
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the
