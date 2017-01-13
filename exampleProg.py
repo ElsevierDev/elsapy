@@ -30,7 +30,7 @@ if myAff.read(myCl):
 else:
     print ("Read affiliation failed.")
 
-## Document example
+## Scopus (Abtract) document example
 # Initialize document with ID as integer
 scpDoc = AbsDoc(scp_id = 84872135457)
 if scpDoc.read(myCl):
@@ -39,6 +39,7 @@ if scpDoc.read(myCl):
 else:
     print ("Read document failed.")
 
+## ScienceDirect (full-text) document example using PII
 piiDoc = FullDoc(sd_pii = 'S1674927814000082')
 if piiDoc.read(myCl):
     print ("piiDoc.title: ", piiDoc.title)
@@ -46,6 +47,7 @@ if piiDoc.read(myCl):
 else:
     print ("Read document failed.")
 
+## ScienceDirect (full-text) document example using DOI
 doiDoc = FullDoc(doi = '10.1016/S1525-1578(10)60571-5')
 if doiDoc.read(myCl):
     print ("doiDoc.title: ", doiDoc.title)
@@ -54,60 +56,40 @@ else:
     print ("Read document failed.")
 
 
-elsDoc_scp = ElsDoc(scp_id = 84872135457)
-if elsDoc_scp.read(myCl):
-    print ("elsDoc_scp.title: ", elsDoc_scp.title)
-else:
-    print ("Read document failed.")
+## Load list of documents from the API into affilation and author objects.
+# Since a document list is retrieved for 25 entries at a time, this is
+#  a potentially lenghty operation - hence the prompt.
+print ("Load documents (Y/N)?")
+s = input('--> ')
 
-elsDoc_pii = ElsDoc(sd_pii = 'S1674927814000082')
-if elsDoc_pii.read(myCl):
-    print ("elsDoc_pii.title: ", elsDoc_pii.title)
-else:
-    print ("Read document failed.")
+if (s == "y" or s == "Y"):
 
-elsDoc_doi = ElsDoc(doi = '10.1016/S1525-1578(10)60571-5')
-if elsDoc_doi.read(myCl):
-    print ("elsDoc_doi.title: ", elsDoc_doi.title)
-else:
-    print ("Read document failed.")
+    ## Read all documents for example author, then write to disk
+    if myAuth.readDocs(myCl):
+        print ("myAuth.doc_list has " + str(len(myAuth.doc_list)) + " items.")
+        myAuth.writeDocs()
+    else:
+        print ("Read docs for author failed.")
 
+    ## Read all documents for example affiliation, then write to disk
+    if myAff.readDocs(myCl):
+        print ("myAff.doc_list has " + str(len(myAff.doc_list)) + " items.")
+        myAff.writeDocs()
+    else:
+        print ("Read docs for affiliation failed.")
 
+## Initialize author search object and execute search
+myAuthSrch = ElsSearch('authlast(keuskamp)','author')
+myAuthSrch.execute(myCl)
+print ("myAuthSrch has", len(myAuthSrch.results), "results.")
 
-#### Load list of documents from the API into affilation and author objects.
-### Since a document list is retrieved for 25 entries at a time, this is
-###  a potentially lenghty operation - hence the prompt.
-##print ("Load documents (Y/N)?")
-##s = input('--> ')
-##
-##if (s == "y" or s == "Y"):
-##
-##    ## Read all documents for example author, then write to disk
-##    if myAuth.readDocs(myCl):
-##        print ("myAuth.doc_list has " + str(len(myAuth.doc_list)) + " items.")
-##        myAuth.writeDocs()
-##    else:
-##        print ("Read docs for author failed.")
-##
-##    ## Read all documents for example affiliation, then write to disk
-##    if myAff.readDocs(myCl):
-##        print ("myAff.doc_list has " + str(len(myAff.doc_list)) + " items.")
-##        myAff.writeDocs()
-##    else:
-##        print ("Read docs for affiliation failed.")
-##
-#### Initialize author search object and execute search
-##myAuthSrch = ElsSearch('authlast(keuskamp)','author')
-##myAuthSrch.execute(myCl)
-##print ("myAuthSrch has", len(myAuthSrch.results), "results.")
-##
-#### Initialize affiliation search object and execute search
-##myAffSrch = ElsSearch('affil(amsterdam)','affiliation')
-##myAffSrch.execute(myCl)
-##print ("myAffSrch has", len(myAffSrch.results), "results.")
-##
-#### Initialize doc search object and execute search, retrieving all results
-##myDocSrch = ElsSearch('star+trek+vs+star+wars','scopus')
-##myDocSrch.execute(myCl, get_all = True)
-##print ("myDocSrch has", len(myDocSrch.results), "results.")
-##
+## Initialize affiliation search object and execute search
+myAffSrch = ElsSearch('affil(amsterdam)','affiliation')
+myAffSrch.execute(myCl)
+print ("myAffSrch has", len(myAffSrch.results), "results.")
+
+## Initialize doc search object and execute search, retrieving all results
+myDocSrch = ElsSearch('star+trek+vs+star+wars','scopus')
+myDocSrch.execute(myCl, get_all = True)
+print ("myDocSrch has", len(myDocSrch.results), "results.")
+

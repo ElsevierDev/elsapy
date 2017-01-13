@@ -443,60 +443,6 @@ class AbsDoc(ElsEntity):
             return False
 
 
-class ElsDoc():
-    """A document in Scopus and/or ScienceDirect. Initialize with Scopus ID, PII or DOI; or with a
-        dictionary containing multiple api.elsevier.com URIs."""
-
-    # static variables
-
-    def __init__(self, uris = '', scp_id = '', sd_pii = '', doi = ''):
-        if uris and not scp_id and not sd_pii and not doi:
-            self._uris = uris
-        ## The following 'elif' clauses leverage other classes to transform
-        ##  'bare' IDs to corresponding URIs before storing them in the URI
-        ##  dictionary
-        elif scp_id and not uris and not sd_pii and not doi:
-            self._uris = {'scp_id' : AbsDoc(scp_id = scp_id).uri}
-        elif sd_pii and not scp_id and not uris and not doi:
-            self._uris = {'sd_pii' : FullDoc(sd_pii = sd_pii).uri}
-        elif doi and not scp_id and not uris and not sd_pii:
-            self._uris = {'doi' : FullDoc(doi = doi).uri}
-
-    # properties
-    ## TODO: add more property getters/setters that map ElsDoc properties to AbsDoc and FullDoc properties.
-    @property
-    def title(self):
-        """Gets the document's title. The title from the full-text record takes precedence over
-            the title from the Scopus abstract record."""
-        try:
-            return self._fullDoc.title
-        except AttributeError:
-            try:
-                return self._absDoc.title
-            except AttributeError:
-                raise AttributeError("'ElsDoc' object has no attribute 'title'")
-
-    @property
-    def uris(self):
-        """Gets the document's uri dictionary"""
-        return self._uris
-
-    def read(self, ElsClient):
-        """Reads JSON representations of the document from ELSAPI for whichever
-            URIs exist in the URI dictionary. Returns True if successful; else,
-            False."""
-        success = False
-        if 'scp_id' in self.uris:
-            self._absDoc = AbsDoc(uri = self.uris['scp_id'])
-            success = self._absDoc.read(ElsClient)
-        if 'sd_pii' in self.uris:
-            self._fullDoc = FullDoc(uri = self.uris['sd_pii'])
-            success = self._fullDoc.read(ElsClient)
-        elif 'doi' in self.uris:
-            self._fullDoc = FullDoc(uri = self.uris['doi'])
-            success = self._fullDoc.read(ElsClient)
-        return success
-
 class ElsSearch():
     """Represents a search to one of the search indexes accessible
          through api.elsevier.com. Returns True if successful; else, False."""
