@@ -7,7 +7,7 @@
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 import requests, json, time, logging, urllib
 from abc import ABCMeta, abstractmethod
