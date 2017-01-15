@@ -48,11 +48,16 @@ class ElsClient:
     
     
     # constructors
-    def __init__(self, api_key, inst_token = '', num_res = 25):
-        """Initializes a client with a given API Key and (optional) institutional token."""
+    def __init__(self, api_key, inst_token = '', num_res = 25, local_path = ''):
+        """Initializes a client with a given API Key and, optionally, institutional
+            token, number of results per request, and local data path."""
         self.api_key = api_key
         self.inst_token = inst_token
         self.num_res = num_res
+        if not local_path:
+            self.local_path = Path.cwd() / 'data'
+        else:
+            self.local_path = Path(local_path)
 
     # properties
     @property
@@ -83,6 +88,15 @@ class ElsClient:
         """Sets the max. number of results to be used by the client instance"""
         self._num_res = numRes
 
+    @property
+    def local_path(self):
+        """Gets the currently configured local path to write data to."""
+        return self._local_path
+    
+    @local_path.setter
+    def local_path(self, path_str):
+        """Sets the local path to write data to."""
+        self._local_path = Path(path_str)
 
     # access functions
     def getBaseURL(self):
@@ -90,7 +104,7 @@ class ElsClient:
         return self.__url_base
 
     # request/response execution functions
-    def execRequest(self,URL):
+    def execRequest(self, URL):
         """Sends the actual request; returns response."""
 
         ## Throttle request, if need be
@@ -127,6 +141,7 @@ class ElsEntity(metaclass=ABCMeta):
         """Initializes a data entity with its URI"""
         self._uri = uri
         self._data = None
+        self._client = None
 
     # properties
     @property
@@ -144,24 +159,37 @@ class ElsEntity(metaclass=ABCMeta):
         """Get the full JSON data for the entity instance"""
         return self._data
 
-    
+    @property
+    def client(self):
+        """Get the ElsClient instance currently used by this entity instance"""
+        return self._client
+
+    @client.setter
+    def client(self, ElsClient):
+        """Set the ElsClient instance to be used by thisentity instance"""
+        self._client = ElsClient
+
     # modifier functions
     @abstractmethod
-    def read(self, ElsClient, payloadType):
+    def read(self, payloadType, ElsClient):
         """Fetches the latest data for this entity from api.elsevier.com.
             Returns True if successful; else, False."""
+        if ElsClient:
+            self._client = ElsClient;
+        elif not self.client:
+            raise ValueError('''Entity object not currently bound to ElsClient instance. Call .read() with ElsClient argument or set .client attribute.''')
         try:
-            apiResponse = ElsClient.execRequest(self.uri)
+            apiResponse = self.client.execRequest(self.uri)
             # TODO: check why response is serialized differently for auth vs affil
             if isinstance(apiResponse[payloadType], list):
                 self._data = apiResponse[payloadType][0]
             else:
                 self._data = apiResponse[payloadType]
             self.ID = self.data["coredata"]["dc:identifier"]
-            ## TODO: check if URI is the same, if necessary update and log warning
+            ## TODO: check if URI is the same, if necessary update and log warning.
             logger.info("Data loaded for " + self.uri)
             return True
-        except (requests.HTTPError, requests.RequestException)as e:
+        except (requests.HTTPError, requests.RequestException) as e:
             logger.warning(e.args)
             return False
 
@@ -170,7 +198,7 @@ class ElsEntity(metaclass=ABCMeta):
              the url-encoded URI as the filename and returns True. Else, returns
              False."""
         if (self.data):
-            dataPath = Path('data')
+            dataPath = Path('data') ## TODO: change to either path configured for client
             if not dataPath.exists():
                     dataPath.mkdir()
             dump_file = open('data/'+urllib.parse.quote_plus(self.uri)+'.json', mode='w')
@@ -198,7 +226,7 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
         return self._doc_list
 
     @abstractmethod
-    def readDocs(self, ElsClient, payloadType):
+    def readDocs(self, payloadType, ElsClient = None):
         """Fetches the list of documents associated with this entity from
             api.elsevier.com. If need be, splits the requests in batches to
             retrieve them all. Returns True if successful; else, False."""
@@ -290,20 +318,20 @@ class ElsAuthor(ElsProfile):
         return self.first_name + " " + self.last_name    
 
     # modifier functions
-    def read(self, ElsClient):
+    def read(self, ElsClient = None):
         """Reads the JSON representation of the author from ELSAPI.
             Returns True if successful; else, False."""
-        if ElsProfile.read(self, ElsClient, self.__payload_type):
+        if ElsProfile.read(self, self.__payload_type, ElsClient):
             return True
         else:
             return False
 
-    def readDocs(self, ElsClient):
+    def readDocs(self, ElsClient = None):
         """Fetches the list of documents associated with this author from 
              api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.readDocs(self, ElsClient, self.__payload_type)
+        return ElsProfile.readDocs(self, self.__payload_type, ElsClient)
 
-    def readMetrics(self, ElsClient):
+    def readMetrics(self, ElsClient = None):
         """Reads the bibliographic metrics for this author from api.elsevier.com
              and updates self.data with them. Returns True if successful; else,
              False."""
@@ -347,18 +375,18 @@ class ElsAffil(ElsProfile):
         return self.data["affiliation-name"];     
 
     # modifier functions
-    def read(self, ElsClient):
+    def read(self, ElsClient = None):
         """Reads the JSON representation of the affiliation from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsProfile.read(self, ElsClient, self.__payload_type):
+        if ElsProfile.read(self, self.__payload_type, ElsClient):
             return True
         else:
             return False
 
-    def readDocs(self, ElsClient):
+    def readDocs(self, ElsClient = None):
         """Fetches the list of documents associated with this affiliation from
               api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.readDocs(self, ElsClient, self.__payload_type)
+        return ElsProfile.readDocs(self, self.__payload_type, ElsClient)
 
 
 
@@ -394,10 +422,10 @@ class FullDoc(ElsEntity):
             raise ValueError('Multiple identifiers specified; just need one.')
 
     # modifier functions
-    def read(self, ElsClient):
+    def read(self, ElsClient = None):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsEntity.read(self, ElsClient, self.__payload_type):
+        if ElsEntity.read(self, self.__payload_type, ElsClient):
             self._title = self.data["coredata"]["dc:title"]
             return True
         else:
@@ -433,10 +461,10 @@ class AbsDoc(ElsEntity):
             raise ValueError('Both URI and Scopus ID specified; just need one.')    
 
     # modifier functions
-    def read(self, ElsClient):
+    def read(self, ElsClient = None):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsEntity.read(self, ElsClient, self.__payload_type):
+        if ElsEntity.read(self, self.__payload_type, ElsClient):
             self._title = self.data["coredata"]["dc:title"]
             return True
         else:
@@ -501,7 +529,7 @@ class ElsSearch():
         """Gets the request uri for the search"""
         return self._uri
 
-    def execute(self, ElsClient, get_all = False):
+    def execute(self, ElsClient = None, get_all = False):
         """Executes the search. If get_all = False (default), this retrieves
             the default number of results specified for the API. If
             get_all = True, multiple API calls will be made to iteratively get 
