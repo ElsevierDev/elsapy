@@ -48,16 +48,18 @@ class ElsClient:
     
     
     # constructors
-    def __init__(self, api_key, inst_token = '', num_res = 25, local_path = ''):
+    def __init__(self, api_key, inst_token = '', num_res = 25, local_dir = ''):
         """Initializes a client with a given API Key and, optionally, institutional
             token, number of results per request, and local data path."""
         self.api_key = api_key
         self.inst_token = inst_token
         self.num_res = num_res
-        if not local_path:
-            self.local_path = Path.cwd() / 'data'
+        if not local_dir:
+            self.local_dir = Path.cwd() / 'data'
         else:
-            self.local_path = Path(local_path)
+            self.local_dir = Path(local_dir)
+        if not self.local_dir.exists():
+            self.local_dir.mkdir()
 
     # properties
     @property
@@ -89,14 +91,14 @@ class ElsClient:
         self._num_res = numRes
 
     @property
-    def local_path(self):
+    def local_dir(self):
         """Gets the currently configured local path to write data to."""
-        return self._local_path
+        return self._local_dir
     
-    @local_path.setter
-    def local_path(self, path_str):
+    @local_dir.setter
+    def local_dir(self, path_str):
         """Sets the local path to write data to."""
-        self._local_path = Path(path_str)
+        self._local_dir = Path(path_str)
 
     # access functions
     def getBaseURL(self):
@@ -198,12 +200,10 @@ class ElsEntity(metaclass=ABCMeta):
              the url-encoded URI as the filename and returns True. Else, returns
              False."""
         if (self.data):
-            dataPath = Path('data') ## TODO: change to either path configured for client
-            if not dataPath.exists():
-                    dataPath.mkdir()
-            dump_file = open('data/'+urllib.parse.quote_plus(self.uri)+'.json', mode='w')
-            json.dump(self.data, dump_file)
-            dump_file.close()
+            dataPath = self.client.local_dir / (urllib.parse.quote_plus(self.uri)+'.json') ## TODO: change to either path configured for client
+            with dataPath.open(mode='w') as dump_file:
+                json.dump(self.data, dump_file)
+                dump_file.close()
             logger.info('Wrote ' + self.uri + ' to file')
             return True
         else:
