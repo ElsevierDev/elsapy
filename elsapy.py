@@ -200,7 +200,7 @@ class ElsEntity(metaclass=ABCMeta):
              the url-encoded URI as the filename and returns True. Else, returns
              False."""
         if (self.data):
-            dataPath = self.client.local_dir / (urllib.parse.quote_plus(self.uri)+'.json') ## TODO: change to either path configured for client
+            dataPath = self.client.local_dir / (urllib.parse.quote_plus(self.uri)+'.json')
             with dataPath.open(mode='w') as dump_file:
                 json.dump(self.data, dump_file)
                 dump_file.close()
