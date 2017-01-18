@@ -1,6 +1,19 @@
 """An example program that uses the elsapy module"""
 
-from elsapy import *
+from elsapy.elsclient import ElsClient
+from elsapy.elsprofile import ElsAuthor, ElsAffil
+from elsapy.elsdoc import FullDoc, AbsDoc
+from elsapy.elssearch import ElsSearch
+import json
+    
+## Load configuration
+conFile = open("config.json")
+config = json.load(conFile)
+conFile.close()
+
+## Initialize client
+myCl = ElsClient(config['apikey'])
+myCl.inst_token = config['insttoken']
 
 ## Load configuration
 conFile = open("config.json")
