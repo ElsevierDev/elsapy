@@ -46,7 +46,6 @@ class ElsClient:
     __min_req_interval = 1                      ## Min. request interval in sec
     __ts_last_req = time.time()                 ## Tracker for throttling
     
-    
     # constructors
     def __init__(self, api_key, inst_token = '', num_res = 25, local_dir = ''):
         """Initializes a client with a given API Key and, optionally, institutional
@@ -155,6 +154,11 @@ class ElsEntity(metaclass=ABCMeta):
     def uri(self, uri):
         """Set the URI of the entity instance"""
         self._uri = uri
+    
+    @property
+    def id(self):
+        """Get the (non-URI) ID of the entity instance"""
+        return self.data["coredata"]["dc:identifier"]
 
     @property
     def data(self):
@@ -182,12 +186,10 @@ class ElsEntity(metaclass=ABCMeta):
             raise ValueError('''Entity object not currently bound to ElsClient instance. Call .read() with ElsClient argument or set .client attribute.''')
         try:
             apiResponse = self.client.execRequest(self.uri)
-            # TODO: check why response is serialized differently for auth vs affil
             if isinstance(apiResponse[payloadType], list):
                 self._data = apiResponse[payloadType][0]
             else:
                 self._data = apiResponse[payloadType]
-            self.ID = self.data["coredata"]["dc:identifier"]
             ## TODO: check if URI is the same, if necessary update and log warning.
             logger.info("Data loaded for " + self.uri)
             return True
@@ -210,6 +212,7 @@ class ElsEntity(metaclass=ABCMeta):
             logger.warning('No data to write for ' + self.uri)
             return False
         
+
 class ElsProfile(ElsEntity, metaclass=ABCMeta):
     """An abstract class representing an author or affiliation profile in
         Elsevier's data model"""
@@ -232,7 +235,6 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
             retrieve them all. Returns True if successful; else, False."""
         try:
             apiResponse = ElsClient.execRequest(self.uri + "?view=documents")
-            # TODO: check why response is serialized differently for auth vs affil; refactor
             if isinstance(apiResponse[payloadType], list):
                 data = apiResponse[payloadType][0]
             else:
@@ -242,7 +244,6 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
             for i in range (0, docCount//ElsClient.num_res):
                 try:
                     apiResponse = ElsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*ElsClient.num_res+1))
-                    # TODO: check why response is serialized differently for auth vs affil; refactor
                     if isinstance(apiResponse[payloadType], list):
                         data = apiResponse[payloadType][0]
                     else:
@@ -348,6 +349,7 @@ class ElsAuthor(ElsProfile):
             return False
         return True
 
+        
 class ElsAffil(ElsProfile):
     """An affilliation (i.e. an institution an author is affiliated with) in Scopus.
         Initialize with URI or affiliation ID."""
@@ -389,7 +391,6 @@ class ElsAffil(ElsProfile):
         return ElsProfile.readDocs(self, self.__payload_type, ElsClient)
 
 
-
 class FullDoc(ElsEntity):
     """A document in ScienceDirect. Initialize with PII or DOI."""
 
@@ -400,7 +401,7 @@ class FullDoc(ElsEntity):
     @property
     def title(self):
         """Gets the document's title"""
-        return self._title;
+        return self.data["coredata"]["dc:title"];
 
     @property
     def uri(self):
@@ -426,7 +427,6 @@ class FullDoc(ElsEntity):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
         if ElsEntity.read(self, self.__payload_type, ElsClient):
-            self._title = self.data["coredata"]["dc:title"]
             return True
         else:
             return False
@@ -441,7 +441,7 @@ class AbsDoc(ElsEntity):
     @property
     def title(self):
         """Gets the document's title"""
-        return self._title;
+        return self.data["coredata"]["dc:title"];
 
     @property
     def uri(self):
@@ -465,7 +465,6 @@ class AbsDoc(ElsEntity):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
         if ElsEntity.read(self, self.__payload_type, ElsClient):
-            self._title = self.data["coredata"]["dc:title"]
             return True
         else:
             return False

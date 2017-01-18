@@ -92,4 +92,3 @@ print ("myAffSrch has", len(myAffSrch.results), "results.")
 myDocSrch = ElsSearch('star+trek+vs+star+wars','scopus')
 myDocSrch.execute(myCl, get_all = True)
 print ("myDocSrch has", len(myDocSrch.results), "results.")
-
