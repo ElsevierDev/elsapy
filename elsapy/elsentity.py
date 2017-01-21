@@ -65,11 +65,11 @@ class ElsEntity(metaclass=ABCMeta):
         elif not self.client:
             raise ValueError('''Entity object not currently bound to elsClient instance. Call .read() with elsClient argument or set .client attribute.''')
         try:
-            apiResponse = self.client.exec_request(self.uri)
-            if isinstance(apiResponse[payloadType], list):
-                self._data = apiResponse[payloadType][0]
+            api_response = self.client.exec_request(self.uri)
+            if isinstance(api_response[payloadType], list):
+                self._data = api_response[payloadType][0]
             else:
-                self._data = apiResponse[payloadType]
+                self._data = api_response[payloadType]
             ## TODO: check if URI is the same, if necessary update and log warning.
             logger.info("Data loaded for " + self.uri)
             return True

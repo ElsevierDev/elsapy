@@ -29,14 +29,14 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
         return self._doc_list
 
     @abstractmethod
-    def read_docs(self, payloadType, elsClient = None):
+    def read_docs(self, payloadType, els_client = None):
         """Fetches the list of documents associated with this entity from
             api.elsevier.com. If need be, splits the requests in batches to
             retrieve them all. Returns True if successful; else, False."""
-        if elsClient:
-            self._client = elsClient;
+        if els_client:
+            self._client = els_client;
         elif not self.client:
-            raise ValueError('''Entity object not currently bound to elsClient instance. Call .read() with elsClient argument or set .client attribute.''')
+            raise ValueError('''Entity object not currently bound to els_client instance. Call .read() with els_client argument or set .client attribute.''')
         try:
             api_response = self.client.exec_request(self.uri + "?view=documents")
             if isinstance(api_response[payloadType], list):
@@ -121,25 +121,25 @@ class ElsAuthor(ElsProfile):
         return self.first_name + " " + self.last_name    
 
     # modifier functions
-    def read(self, elsClient = None):
+    def read(self, els_client = None):
         """Reads the JSON representation of the author from ELSAPI.
             Returns True if successful; else, False."""
-        if ElsProfile.read(self, self.__payload_type, elsClient):
+        if ElsProfile.read(self, self.__payload_type, els_client):
             return True
         else:
             return False
 
-    def read_docs(self, elsClient = None):
+    def read_docs(self, els_client = None):
         """Fetches the list of documents associated with this author from 
              api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.read_docs(self, self.__payload_type, elsClient)
+        return ElsProfile.read_docs(self, self.__payload_type, els_client)
 
-    def readMetrics(self, elsClient = None):
+    def readMetrics(self, els_client = None):
         """Reads the bibliographic metrics for this author from api.elsevier.com
              and updates self.data with them. Returns True if successful; else,
              False."""
         try:
-            api_response = elsClient.exec_request(self.uri + "?field=document-count,cited-by-count,citation-count,h-index")
+            api_response = els_client.exec_request(self.uri + "?field=document-count,cited-by-count,citation-count,h-index")
             data = api_response[self.__payload_type][0]
             self._data['coredata']['citation-count'] = data['coredata']['citation-count']
             self._data['coredata']['cited-by-count'] = data['coredata']['citation-count']
@@ -179,15 +179,15 @@ class ElsAffil(ElsProfile):
         return self.data["affiliation-name"];     
 
     # modifier functions
-    def read(self, elsClient = None):
+    def read(self, els_client = None):
         """Reads the JSON representation of the affiliation from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsProfile.read(self, self.__payload_type, elsClient):
+        if ElsProfile.read(self, self.__payload_type, els_client):
             return True
         else:
             return False
 
-    def read_docs(self, elsClient = None):
+    def read_docs(self, els_client = None):
         """Fetches the list of documents associated with this affiliation from
               api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.read_docs(self, self.__payload_type, elsClient)
+        return ElsProfile.read_docs(self, self.__payload_type, els_client)

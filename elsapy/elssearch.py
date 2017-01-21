@@ -9,7 +9,7 @@ import requests, json, urllib
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
 from . import log_util
-from .elsclient import ElsClient
+from .elsclient import els_client
 
 logger = log_util.get_logger(__name__)
 
@@ -71,22 +71,22 @@ class ElsSearch():
         """Gets the request uri for the search"""
         return self._uri
 
-    def execute(self, ElsClient = None, get_all = False):
+    def execute(self, els_client = None, get_all = False):
         """Executes the search. If get_all = False (default), this retrieves
             the default number of results specified for the API. If
             get_all = True, multiple API calls will be made to iteratively get 
             all results for the search, up to a maximum of 5,000."""
         ## TODO: add exception handling
-        apiResponse = ElsClient.exec_request(self._uri)
-        self._tot_num_res = int(apiResponse['search-results']['opensearch:totalResults'])
-        self._results = apiResponse['search-results']['entry']
+        api_response = els_client.exec_request(self._uri)
+        self._tot_num_res = int(api_response['search-results']['opensearch:totalResults'])
+        self._results = api_response['search-results']['entry']
         if get_all is True:
             while (self.num_res < self.tot_num_res) and (self.num_res < 5000):
-                for e in apiResponse['search-results']['link']:
+                for e in api_response['search-results']['link']:
                     if e['@ref'] == 'next':
                         next_url = e['@href']
-                apiResponse = ElsClient.exec_request(next_url)
-                self._results += apiResponse['search-results']['entry']         
+                api_response = els_client.exec_request(next_url)
+                self._results += api_response['search-results']['entry']         
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the
