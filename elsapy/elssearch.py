@@ -77,7 +77,7 @@ class ElsSearch():
             get_all = True, multiple API calls will be made to iteratively get 
             all results for the search, up to a maximum of 5,000."""
         ## TODO: add exception handling
-        apiResponse = ElsClient.execRequest(self._uri)
+        apiResponse = ElsClient.exec_request(self._uri)
         self._tot_num_res = int(apiResponse['search-results']['opensearch:totalResults'])
         self._results = apiResponse['search-results']['entry']
         if get_all is True:
@@ -85,7 +85,7 @@ class ElsSearch():
                 for e in apiResponse['search-results']['link']:
                     if e['@ref'] == 'next':
                         next_url = e['@href']
-                apiResponse = ElsClient.execRequest(next_url)
+                apiResponse = ElsClient.exec_request(next_url)
                 self._results += apiResponse['search-results']['entry']         
 
     def hasAllResults(self):

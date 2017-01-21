@@ -29,25 +29,29 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
         return self._doc_list
 
     @abstractmethod
-    def readDocs(self, payloadType, ElsClient = None):
+    def read_docs(self, payloadType, elsClient = None):
         """Fetches the list of documents associated with this entity from
             api.elsevier.com. If need be, splits the requests in batches to
             retrieve them all. Returns True if successful; else, False."""
+        if elsClient:
+            self._client = elsClient;
+        elif not self.client:
+            raise ValueError('''Entity object not currently bound to elsClient instance. Call .read() with elsClient argument or set .client attribute.''')
         try:
-            apiResponse = ElsClient.execRequest(self.uri + "?view=documents")
-            if isinstance(apiResponse[payloadType], list):
-                data = apiResponse[payloadType][0]
+            api_response = self.client.exec_request(self.uri + "?view=documents")
+            if isinstance(api_response[payloadType], list):
+                data = api_response[payloadType][0]
             else:
-                data = apiResponse[payloadType]
+                data = api_response[payloadType]
             docCount = int(data["documents"]["@total"])
             self._doc_list = [x for x in data["documents"]["abstract-document"]]
             for i in range (0, docCount//ElsClient.num_res):
                 try:
-                    apiResponse = ElsClient.execRequest(self.uri + "?view=documents&start=" + str((i+1)*ElsClient.num_res+1))
-                    if isinstance(apiResponse[payloadType], list):
-                        data = apiResponse[payloadType][0]
+                    api_response = ElsClient.exec_request(self.uri + "?view=documents&start=" + str((i+1)*ElsClient.num_res+1))
+                    if isinstance(api_response[payloadType], list):
+                        data = api_response[payloadType][0]
                     else:
-                        data = apiResponse[payloadType]
+                        data = api_response[payloadType]
                     self._doc_list = self._doc_list + [x for x in data["documents"]["abstract-document"]]
                 except  (requests.HTTPError, requests.RequestException) as e:
                     if hasattr(self, 'doc_list'):       ## We don't want incomplete doc lists
@@ -59,7 +63,7 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
             logger.warning(e.args)
             return False
 
-    def writeDocs(self):
+    def write_docs(self):
         """If a doclist exists for the entity, writes it to disk as a .JSON file
              with the url-encoded URI as the filename and returns True. Else,
              returns False."""
@@ -125,18 +129,18 @@ class ElsAuthor(ElsProfile):
         else:
             return False
 
-    def readDocs(self, elsClient = None):
+    def read_docs(self, elsClient = None):
         """Fetches the list of documents associated with this author from 
              api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.readDocs(self, self.__payload_type, elsClient)
+        return ElsProfile.read_docs(self, self.__payload_type, elsClient)
 
     def readMetrics(self, elsClient = None):
         """Reads the bibliographic metrics for this author from api.elsevier.com
              and updates self.data with them. Returns True if successful; else,
              False."""
         try:
-            apiResponse = elsClient.execRequest(self.uri + "?field=document-count,cited-by-count,citation-count,h-index")
-            data = apiResponse[self.__payload_type][0]
+            api_response = elsClient.exec_request(self.uri + "?field=document-count,cited-by-count,citation-count,h-index")
+            data = api_response[self.__payload_type][0]
             self._data['coredata']['citation-count'] = data['coredata']['citation-count']
             self._data['coredata']['cited-by-count'] = data['coredata']['citation-count']
             self._data['coredata']['document-count'] = data['coredata']['document-count']
@@ -183,7 +187,7 @@ class ElsAffil(ElsProfile):
         else:
             return False
 
-    def readDocs(self, elsClient = None):
+    def read_docs(self, elsClient = None):
         """Fetches the list of documents associated with this affiliation from
               api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.readDocs(self, self.__payload_type, elsClient)
+        return ElsProfile.read_docs(self, self.__payload_type, elsClient)

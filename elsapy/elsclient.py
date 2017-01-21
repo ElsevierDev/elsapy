@@ -23,7 +23,7 @@ class ElsClient:
     __ts_last_req = time.time()                 ## Tracker for throttling
  
     # constructors
-    def __init__(self, api_key, inst_token = '', num_res = 25, local_dir = ''):
+    def __init__(self, api_key, inst_token = None, num_res = 25, local_dir = None):
         """Initializes a client with a given API Key and, optionally, institutional
             token, number of results per request, and local data path."""
         self.api_key = api_key
@@ -81,7 +81,7 @@ class ElsClient:
         return self.__url_base
 
     # request/response execution functions
-    def execRequest(self, URL):
+    def exec_request(self, URL):
         """Sends the actual request; returns response."""
 
         ## Throttle request, if need be
