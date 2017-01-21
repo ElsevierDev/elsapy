@@ -46,10 +46,10 @@ class FullDoc(ElsEntity):
             raise ValueError('Multiple identifiers specified; just need one.')
 
     # modifier functions
-    def read(self, elsClient = None):
+    def read(self, els_client = None):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsEntity.read(self, self.__payload_type, elsClient):
+        if ElsEntity.read(self, self.__payload_type, els_client):
             return True
         else:
             return False
@@ -84,10 +84,10 @@ class AbsDoc(ElsEntity):
             raise ValueError('Both URI and Scopus ID specified; just need one.')    
 
     # modifier functions
-    def read(self, elsClient = None):
+    def read(self, els_client = None):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsEntity.read(self, self.__payload_type, elsClient):
+        if ElsEntity.read(self, self.__payload_type, els_client):
             return True
         else:
             return False
