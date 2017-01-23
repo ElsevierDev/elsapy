@@ -134,7 +134,7 @@ class ElsAuthor(ElsProfile):
              api.elsevier.com. Returns True if successful; else, False."""
         return ElsProfile.read_docs(self, self.__payload_type, els_client)
 
-    def readMetrics(self, els_client = None):
+    def read_metrics(self, els_client = None):
         """Reads the bibliographic metrics for this author from api.elsevier.com
              and updates self.data with them. Returns True if successful; else,
              False."""
