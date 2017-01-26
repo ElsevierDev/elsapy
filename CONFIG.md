@@ -11,6 +11,6 @@ If you are using (or adapting) exampleProg.py, do this:
     ```
     
 - Paste your APIkey (obtained from http://dev.elsevier.com) in the right place
-- No need to insert an insttoken, unless you have one
+- If you don't have a valid insttoken (which you would have received from Elsevier support staff), delete the placeholder text. If you enter a dummy value, your API requests will fail.
 
 The '.gitignore' file lists 'config.json' as a file to be ignored when committing elsapy to a GIT repository, which is to prevent your APIkey from being shared with the world. Make similar provisions when you change your configuration setup.
