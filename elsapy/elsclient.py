@@ -9,7 +9,7 @@ import requests, json, time, urllib
 from pathlib import Path
 from . import log_util
 
-__version__ = '0.3'
+__version__ = '0.3.1'
 
 logger = log_util.get_logger(__name__)
 
@@ -106,4 +106,4 @@ class ElsClient:
         if r.status_code == 200:
             return json.loads(r.text)
         else:
-            raise requests.HTTPError("HTTP " + str(r.status_code) + " Error from " + URL + " :\n" + r.text)
+            raise requests.HTTPError("HTTP " + str(r.status_code) + " Error from " + URL + "\nand using headers " + str(headers) + ":\n" + r.text)
