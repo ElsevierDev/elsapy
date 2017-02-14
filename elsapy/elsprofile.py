@@ -32,7 +32,9 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
     def read_docs(self, payloadType, els_client = None):
         """Fetches the list of documents associated with this entity from
             api.elsevier.com. If need be, splits the requests in batches to
-            retrieve them all. Returns True if successful; else, False."""
+            retrieve them all. Returns True if successful; else, False.
+			NOTE: this method requires elevated API permissions.
+			See http://bit.ly/2leirnq for more info."""
         if els_client:
             self._client = els_client;
         elif not self.client:
