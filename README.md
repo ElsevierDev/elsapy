@@ -24,7 +24,8 @@ More info on the [wiki](https://github.com/ElsevierDev/elsapy/wiki).
 *   Some knowledge of Python and [object-oriented design](https://en.wikipedia.org/wiki/Object-oriented_design)
 
 ## Quick start
-*   Clone or download this repo (elsapy is not yet available through `pip install`) and either add to your Python package folder, or to your project's folder
+*   Download or clone this repository (elsapy is not yet available through `pip install`)
+*   Add the unzipped / cloned 'elsapy' folder to your Python package folder, or to your project's folder
 *   Create a [config file and add your APIkey](https://github.com/ElsevierDev/elsapy/blob/master/CONFIG.md) to it
 *   Modify exampleProg.py to suit your needs
 
