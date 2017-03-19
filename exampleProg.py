@@ -15,15 +15,6 @@ con_file.close()
 client = ElsClient(config['apikey'])
 client.inst_token = config['insttoken']
 
-## Load configuration
-con_file = open("config.json")
-config = json.load(con_file)
-con_file.close()
-
-## Initialize client
-client = ElsClient(config['apikey'])
-client.inst_token = config['insttoken']
-
 ## Author example
 # Initialize author with uri
 my_auth = ElsAuthor(uri = 'https://api.elsevier.com/content/author/AUTHOR_ID/7004367821')

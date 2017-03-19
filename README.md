@@ -19,11 +19,13 @@ More info on the [wiki](https://github.com/ElsevierDev/elsapy/wiki).
 
 ## Prerequisites
 *   An API key from http://dev.elsevier.com
-*   Python 3.x on your machine, with the [Requests HTTP library](http://docs.python-requests.org/) added
-*   A network connection at an institution that subscribes to Scopus
-*	Some knowledge of Python and [object-oriented design](https://en.wikipedia.org/wiki/Object-oriented_design)
+*   Python 3.x on your machine, with the [Requests HTTP library](http://docs.python-requests.org/) added. If you have neither installed yet, you might want to get the [Anaconda distribution of Python 3.6](https://www.continuum.io/downloads) go get both in one go (plus a lot of other useful stuff)
+*   A network connection at an institution that subscribes to Scopus and/or ScienceDirect
+*   Some knowledge of Python and [object-oriented design](https://en.wikipedia.org/wiki/Object-oriented_design)
 
 ## Quick start
+*   Download or clone this repository (elsapy is not yet available through `pip install`)
+*   Add the unzipped / cloned 'elsapy' folder to your Python package folder, or to your project's folder
 *   Create a [config file and add your APIkey](https://github.com/ElsevierDev/elsapy/blob/master/CONFIG.md) to it
 *   Modify exampleProg.py to suit your needs
 
