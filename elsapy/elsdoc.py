@@ -35,11 +35,11 @@ class FullDoc(ElsEntity):
     def __init__(self, uri = '', sd_pii = '', doi = ''):
         """Initializes a document given a Scopus document URI or Scopus ID."""
         if uri and not sd_pii and not doi:
-            ElsEntity.__init__(self, uri)
+            super().__init__(uri)
         elif sd_pii and not uri and not doi:
-            ElsEntity.__init__(self, self.__uri_base + 'PII/' + str(sd_pii))
+            super().__init__(self.__uri_base + 'PII/' + str(sd_pii))
         elif doi and not uri and not sd_pii:
-            ElsEntity.__init__(self, self.__uri_base + 'DOI/' + str(doi))
+            super().__init__(self.__uri_base + 'DOI/' + str(doi))
         elif not uri and not scp_id and not doi:
             raise ValueError('No URI, ScienceDirect PII or DOI specified')
         else:
@@ -49,7 +49,7 @@ class FullDoc(ElsEntity):
     def read(self, els_client = None):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsEntity.read(self, self.__payload_type, els_client):
+        if super().read(self.__payload_type, els_client):
             return True
         else:
             return False
@@ -75,9 +75,9 @@ class AbsDoc(ElsEntity):
     def __init__(self, uri = '', scp_id = ''):
         """Initializes a document given a Scopus document URI or Scopus ID."""
         if uri and not scp_id:
-            ElsEntity.__init__(self, uri)
+            super().__init__(uri)
         elif scp_id and not uri:
-            ElsEntity.__init__(self, self.__uri_base + 'SCOPUS_ID/' + str(scp_id))
+            super().__init__(self.__uri_base + 'SCOPUS_ID/' + str(scp_id))
         elif not uri and not scp_id:
             raise ValueError('No URI or Scopus ID specified')
         else:
@@ -87,7 +87,7 @@ class AbsDoc(ElsEntity):
     def read(self, els_client = None):
         """Reads the JSON representation of the document from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsEntity.read(self, self.__payload_type, els_client):
+        if super().read(self.__payload_type, els_client):
             return True
         else:
             return False

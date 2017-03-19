@@ -19,7 +19,7 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
 
     def __init__(self, uri):
         """Initializes a data entity with its URI"""
-        ElsEntity.__init__(self, uri)
+        super().__init__(uri)
         self._doc_list = None
 
 
@@ -98,9 +98,9 @@ class ElsAuthor(ElsProfile):
     def __init__(self, uri = '', author_id = ''):
         """Initializes an author given a Scopus author URI or author ID"""
         if uri and not author_id:
-            ElsEntity.__init__(self, uri)
+            super().__init__(uri)
         elif author_id and not uri:
-            ElsEntity.__init__(self, self.__uri_base + str(author_id))
+            super().__init__(self.__uri_base + str(author_id))
         elif not uri and not author_id:
             raise ValueError('No URI or author ID specified')
         else:
@@ -169,9 +169,9 @@ class ElsAffil(ElsProfile):
     def __init__(self, uri = '', affil_id = ''):
         """Initializes an affiliation given a Scopus affiliation URI or affiliation ID."""
         if uri and not affil_id:
-            ElsProfile.__init__(self, uri)
+            super().__init__(uri)
         elif affil_id and not uri:
-            ElsProfile.__init__(self, self.__uri_base + str(affil_id))
+            super().__init__(self.__uri_base + str(affil_id))
         elif not uri and not affil_id:
             raise ValueError('No URI or affiliation ID specified')
         else:
