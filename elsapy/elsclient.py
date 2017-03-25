@@ -9,7 +9,7 @@ import requests, json, time, urllib
 from pathlib import Path
 from . import log_util
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 logger = log_util.get_logger(__name__)
 
