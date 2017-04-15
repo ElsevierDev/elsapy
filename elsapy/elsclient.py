@@ -69,7 +69,12 @@ class ElsClient:
     def local_dir(self):
         """Gets the currently configured local path to write data to."""
         return self._local_dir
-    
+
+    @property
+    def req_status(self):
+    	'''Return the status of the request response, '''
+    	return {'status_code': self._status_code, 'status_msg': self._status_msg}
+
     @local_dir.setter
     def local_dir(self, path_str):
         """Sets the local path to write data to."""
@@ -103,7 +108,10 @@ class ElsClient:
             headers = headers
             )
         self.__ts_last_req = time.time()
+        self._status_code=r.status_code
         if r.status_code == 200:
+            self._status_msg='data retrieved'
             return json.loads(r.text)
         else:
+            self._status_msg="HTTP " + str(r.status_code) + " Error from " + URL + " and using headers " + str(headers) + ": " + r.text
             raise requests.HTTPError("HTTP " + str(r.status_code) + " Error from " + URL + "\nand using headers " + str(headers) + ":\n" + r.text)
