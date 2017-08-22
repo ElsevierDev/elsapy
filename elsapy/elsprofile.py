@@ -92,7 +92,7 @@ class ElsAuthor(ElsProfile):
     
     # static variables
     __payload_type = u'author-retrieval-response'
-    __uri_base = u'https://api.elsevier.com/content/author/AUTHOR_ID/'
+    __uri_base = u'https://api.elsevier.com/content/author/author_id/'
 
     # constructors
     def __init__(self, uri = '', author_id = ''):
