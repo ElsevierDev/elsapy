@@ -6,3 +6,5 @@
     * https://github.com/ElsevierDev/elsapy
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
+
+version = '0.4.2'

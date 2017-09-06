@@ -5,11 +5,13 @@
     * https://api.elsevier.com"""
 
 
-import requests, json, time, urllib
-from pathlib import Path
+import requests, json, time
 from . import log_util
-
-__version__ = '0.4.1'
+from .__init__ import version
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
 
 logger = log_util.get_logger(__name__)
 
@@ -18,7 +20,7 @@ class ElsClient:
 
     # class variables
     __url_base = "https://api.elsevier.com/"    ## Base URL for later use
-    __user_agent = "elsapy-v%s" % __version__   ## Helps track library use
+    __user_agent = "elsapy-v%s" % version       ## Helps track library use
     __min_req_interval = 1                      ## Min. request interval in sec
     __ts_last_req = time.time()                 ## Tracker for throttling
  
@@ -30,9 +32,9 @@ class ElsClient:
         self.inst_token = inst_token
         self.num_res = num_res
         if not local_dir:
-            self.local_dir = Path.cwd() / 'data'
+            self.local_dir = pathlib.Path.cwd() / 'data'
         else:
-            self.local_dir = Path(local_dir)
+            self.local_dir = pathlib.Path(local_dir)
         if not self.local_dir.exists():
             self.local_dir.mkdir()
 
@@ -78,7 +80,7 @@ class ElsClient:
     @local_dir.setter
     def local_dir(self, path_str):
         """Sets the local path to write data to."""
-        self._local_dir = Path(path_str)
+        self._local_dir = pathlib.Path(path_str)
 
     # access functions
     def getBaseURL(self):

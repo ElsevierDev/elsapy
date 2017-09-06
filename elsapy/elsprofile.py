@@ -6,9 +6,7 @@
 
 import requests, json, urllib
 from abc import ABCMeta, abstractmethod
-from pathlib import Path
 from . import log_util
-from .elsclient import ElsClient
 from .elsentity import ElsEntity
 
 logger = log_util.get_logger(__name__)        

@@ -4,11 +4,7 @@
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
 
-import requests, json, urllib
-from abc import ABCMeta, abstractmethod
-from pathlib import Path
 from . import log_util
-from .elsclient import ElsClient
 
 logger = log_util.get_logger(__name__)
 

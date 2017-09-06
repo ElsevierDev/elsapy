@@ -4,11 +4,8 @@
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
 
-__version__ = '0.2'
-
-import requests, json, logging, urllib
+import requests, json, urllib
 from abc import ABCMeta, abstractmethod
-from pathlib import Path
 from . import log_util
 
 logger = log_util.get_logger(__name__)
