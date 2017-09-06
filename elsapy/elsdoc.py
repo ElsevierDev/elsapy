@@ -37,10 +37,10 @@ class FullDoc(ElsEntity):
         if uri and not sd_pii and not doi:
             super().__init__(uri)
         elif sd_pii and not uri and not doi:
-            super().__init__(self.__uri_base + 'PII/' + str(sd_pii))
+            super().__init__(self.__uri_base + 'PII:' + str(sd_pii))
         elif doi and not uri and not sd_pii:
-            super().__init__(self.__uri_base + 'DOI/' + str(doi))
-        elif not uri and not scp_id and not doi:
+            super().__init__(self.__uri_base + 'DOI:' + str(doi))
+        elif not uri and not doi:
             raise ValueError('No URI, ScienceDirect PII or DOI specified')
         else:
             raise ValueError('Multiple identifiers specified; just need one.')
@@ -77,7 +77,7 @@ class AbsDoc(ElsEntity):
         if uri and not scp_id:
             super().__init__(uri)
         elif scp_id and not uri:
-            super().__init__(self.__uri_base + 'SCOPUS_ID/' + str(scp_id))
+            super().__init__(self.__uri_base + 'SCOPUS_ID:' + str(scp_id))
         elif not uri and not scp_id:
             raise ValueError('No URI or Scopus ID specified')
         else:
