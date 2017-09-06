@@ -92,7 +92,7 @@ class ElsAuthor(ElsProfile):
     
     # static variables
     __payload_type = u'author-retrieval-response'
-    __uri_base = u'https://api.elsevier.com/content/author/AUTHOR_ID:'
+    __uri_base = u'https://api.elsevier.com/content/author/author_id/'
 
     # constructors
     def __init__(self, uri = '', author_id = ''):
@@ -163,7 +163,7 @@ class ElsAffil(ElsProfile):
     
     # static variables
     __payload_type = u'affiliation-retrieval-response'
-    __uri_base = u'https://api.elsevier.com/content/affiliation/AFFILIATION_ID:'
+    __uri_base = u'https://api.elsevier.com/content/affiliation/affiliation_id/'
 
     # constructors
     def __init__(self, uri = '', affil_id = ''):
