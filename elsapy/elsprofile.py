@@ -144,10 +144,10 @@ class ElsAuthor(ElsProfile):
             if not self.data:
                 self._data = dict()
                 self._data['coredata'] = dict()
-            self._data['coredata']['dc:identifier'] = data['coredata']['dc:identifier']
-            self._data['coredata']['citation-count'] = data['coredata']['citation-count']
-            self._data['coredata']['cited-by-count'] = data['coredata']['citation-count']
-            self._data['coredata']['document-count'] = data['coredata']['document-count']
+            self._data['coredata']['dc:identifier'] = int(data['coredata']['dc:identifier'])
+            self._data['coredata']['citation-count'] = int(data['coredata']['citation-count'])
+            self._data['coredata']['cited-by-count'] = int(data['coredata']['citation-count'])
+            self._data['coredata']['document-count'] = int(data['coredata']['document-count'])
             self._data['h-index'] = data['h-index']
             logger.info('Added/updated author metrics')
         except (requests.HTTPError, requests.RequestException) as e:
