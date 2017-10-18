@@ -148,7 +148,7 @@ class ElsAuthor(ElsProfile):
             self._data['coredata']['citation-count'] = int(data['coredata']['citation-count'])
             self._data['coredata']['cited-by-count'] = int(data['coredata']['citation-count'])
             self._data['coredata']['document-count'] = int(data['coredata']['document-count'])
-            self._data['h-index'] = data['h-index']
+            self._data['h-index'] = int(data['h-index'])
             logger.info('Added/updated author metrics')
         except (requests.HTTPError, requests.RequestException) as e:
             logger.warning(e.args)
