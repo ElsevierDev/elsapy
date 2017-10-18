@@ -34,8 +34,14 @@ class ElsEntity(metaclass=ABCMeta):
     
     @property
     def id(self):
-        """Get the (non-URI) ID of the entity instance"""
+        """Get the dc:identifier of the entity instance"""
         return self.data["coredata"]["dc:identifier"]
+    
+    @property
+    def int_id(self):
+        """Get the (non-URI, numbers only) ID of the entity instance"""
+        dc_id = self.data["coredata"]["dc:identifier"]
+        return dc_id[dc_id.find(':') + 1:]
 
     @property
     def data(self):
