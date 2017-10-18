@@ -7,4 +7,4 @@
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
 
-version = '0.4.2'
+version = '0.4.3'

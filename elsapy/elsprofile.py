@@ -139,11 +139,12 @@ class ElsAuthor(ElsProfile):
              and updates self.data with them. Returns True if successful; else,
              False."""
         try:
-            api_response = els_client.exec_request(self.uri + "?field=document-count,cited-by-count,citation-count,h-index")
+            api_response = els_client.exec_request(self.uri + "?field=document-count,cited-by-count,citation-count,h-index,dc:identifier")
             data = api_response[self.__payload_type][0]
             if not self.data:
                 self._data = dict()
                 self._data['coredata'] = dict()
+            self._data['coredata']['dc:identifier'] = data['coredata']['dc:identifier']
             self._data['coredata']['citation-count'] = data['coredata']['citation-count']
             self._data['coredata']['cited-by-count'] = data['coredata']['citation-count']
             self._data['coredata']['document-count'] = data['coredata']['document-count']
