@@ -4,10 +4,11 @@
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
 
-__version__ = '0.2'
-
 import time, logging
-from pathlib import Path
+try:
+    from pathlib import Path
+except ImportError:
+    from pathlib2 import Path
 
 ## Following adapted from https://docs.python.org/3/howto/logging-cookbook.html
 

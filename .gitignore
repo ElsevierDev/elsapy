@@ -7,3 +7,6 @@ test_elsapy.py
 /data
 /test_data
 /logs
+/dist
+/build
+/elsapy.egg-info
