@@ -26,7 +26,7 @@ More info on the [wiki](https://github.com/ElsevierDev/elsapy/wiki).
 ## Quick start
 *   Run `pip install elsapy` from your command line
 *   In your project root folder, [create a config file and add your APIkey](https://github.com/ElsevierDev/elsapy/blob/master/CONFIG.md) to it
-*	Download [exampleProg.py](https://raw.githubusercontent.com/ElsevierDev/elsapy/master/exampleProg.py) to your project folder and modify it to suit your needs
+*	Download [exampleProg.py](https://raw.githubusercontent.com/ElsevierDev/elsapy/master/exampleProg.py) to your project root folder and modify it to suit your needs
 
 ## Disclaimer
 This is not an 'official' SDK and is not guaranteed to always work with Elsevier's APIs, on all platforms, or without eating up all your machine's resources. But we'll do our best to keep it in good shape, are happy to take suggestions for improvements, and are open to collaborations. License info is [here](https://github.com/ElsevierDev/elsapy/blob/master/LICENSE.md).
