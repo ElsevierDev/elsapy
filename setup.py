@@ -10,7 +10,7 @@ setup(
     author_email = 'integrationsupport@elsevier.com',
     url = 'https://github.com/ElsevierDev/elsapy',
     license = 'License :: OSI Approved :: BSD License',
-    download_url = 'https://github.com/peterldowns/mypackage/archive/0.1.tar.gz',
+    download_url = 'https://www.github.com/ElsevierDev/elsapy/archive/0.4.4.tar.gz',
     keywords = ['elsevier api', 'sciencedirect api', 'scopus api'], # arbitrary keywords
     classifiers = [
         'Development Status :: 3 - Alpha',
