@@ -5,6 +5,7 @@
     * https://api.elsevier.com"""
 
 from . import log_util
+from urllib.parse import quote_plus as url_encode
 
 logger = log_util.get_logger(__name__)
 
@@ -19,7 +20,8 @@ class ElsSearch():
         """Initializes a search object with a query and target index."""
         self.query = query
         self.index = index
-        self._uri = self.__base_url + self.index + '?query=' + self.query
+        self._uri = self.__base_url + self.index + '?query=' + url_encode(
+                self.query)
 
     # properties
     @property
