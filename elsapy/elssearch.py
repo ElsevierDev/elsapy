@@ -6,6 +6,7 @@
 
 from . import log_util
 from urllib.parse import quote_plus as url_encode
+import pandas as pd
 
 logger = log_util.get_logger(__name__)
 
@@ -83,7 +84,8 @@ class ElsSearch():
                     if e['@ref'] == 'next':
                         next_url = e['@href']
                 api_response = els_client.exec_request(next_url)
-                self._results += api_response['search-results']['entry']         
+                self._results += api_response['search-results']['entry']
+            self.results_df = pd.DataFrame(self._results)
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the
