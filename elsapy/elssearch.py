@@ -93,6 +93,8 @@ class ElsSearch():
                 api_response = els_client.exec_request(next_url)
                 self._results += api_response['search-results']['entry']
         self.results_df = pd.DataFrame(self._results)
+        # TODO: turn this logic (i.e. apply type and format conversion to 
+        #   commonly used fields) into a decorator.
         if 'link' in self.results_df.columns:
             self.results_df['link'] = self.results_df.link.apply(
                 lambda x: dict([(e['@ref'], e['@href']) for e in x]))
@@ -102,6 +104,7 @@ class ElsSearch():
                         int)
         for date_field in self._date_resp_fields:
             if date_field in self.results_df.columns:
+                print("Converting {} for {}".format(date_field, self.uri))
                 self.results_df[date_field] = self.results_df[date_field].apply(
                         pd.Timestamp)
 
