@@ -14,8 +14,12 @@ class ElsSearch():
     """Represents a search to one of the search indexes accessible
          through api.elsevier.com. Returns True if successful; else, False."""
 
-    # static variables
+    # static / class variables
     __base_url = u'https://api.elsevier.com/content/search/'
+    __int_resp_fields = [
+            'document-count',
+            'citedby-count',
+            ]
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
@@ -85,7 +89,14 @@ class ElsSearch():
                         next_url = e['@href']
                 api_response = els_client.exec_request(next_url)
                 self._results += api_response['search-results']['entry']
-            self.results_df = pd.DataFrame(self._results)
+        self.results_df = pd.DataFrame(self._results)
+        if 'link' in self.results_df.columns:
+            self.results_df['link'] = self.results_df.link.apply(
+                lambda x: dict([(e['@ref'], e['@href']) for e in x]))
+        for int_field in self.__int_resp_fields:
+            if int_field in self.results_df.columns:
+                self.results_df[int_field] = self.results_df[int_field].apply(
+                        int)
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the

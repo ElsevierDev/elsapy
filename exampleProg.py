@@ -83,15 +83,15 @@ client.inst_token = config['insttoken']
 #    else:
 #        print ("Read docs for affiliation failed.")
 #
-### Initialize author search object and execute search
-#auth_srch = ElsSearch('authlast(keuskamp)','author')
-#auth_srch.execute(client)
-#print ("auth_srch has", len(auth_srch.results), "results.")
-#
-### Initialize affiliation search object and execute search
-#aff_srch = ElsSearch('affil(amsterdam)','affiliation')
-#aff_srch.execute(client)
-#print ("aff_srch has", len(aff_srch.results), "results.")
+## Initialize author search object and execute search
+auth_srch = ElsSearch('authlast(keuskamp)','author')
+auth_srch.execute(client)
+print ("auth_srch has", len(auth_srch.results), "results.")
+
+## Initialize affiliation search object and execute search
+aff_srch = ElsSearch('affil(amsterdam)','affiliation')
+aff_srch.execute(client)
+print ("aff_srch has", len(aff_srch.results), "results.")
 
 ## Initialize doc search object and execute search, retrieving all results
 doc_srch = ElsSearch('star trek vs star wars','scopus')
