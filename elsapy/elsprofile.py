@@ -4,7 +4,7 @@
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
 
-import requests, json, urllib
+import requests, json, urllib, pandas as pd
 from abc import ABCMeta, abstractmethod
 from . import log_util
 from .elsentity import ElsEntity
@@ -58,6 +58,8 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
                         self._doc_list = None
                     raise e
             logger.info("Documents loaded for " + self.uri)
+            self.docsframe = pd.DataFrame(self._doc_list)
+            logger.info("Documents loaded into dataframe for " + self.uri)
             return True
         except (requests.HTTPError, requests.RequestException) as e:
             logger.warning(e.args)
@@ -68,7 +70,6 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
              with the url-encoded URI as the filename and returns True. Else,
              returns False."""
         if self.doc_list:
-            dataPath = self.client.local_dir
             dump_file = open('data/'
                              + urllib.parse.quote_plus(self.uri+'?view=documents')
                              + '.json', mode='w'

@@ -15,17 +15,20 @@ class ElsSearch():
          through api.elsevier.com. Returns True if successful; else, False."""
 
     # static / class variables
-    __base_url = u'https://api.elsevier.com/content/search/'
-    __int_resp_fields = [
+    _base_url = u'https://api.elsevier.com/content/search/'
+    _int_resp_fields = [
             'document-count',
             'citedby-count',
+            ]
+    _date_resp_fields = [
+            'prism:coverDate',
             ]
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
         self.query = query
         self.index = index
-        self._uri = self.__base_url + self.index + '?query=' + url_encode(
+        self._uri = self._base_url + self.index + '?query=' + url_encode(
                 self.query)
 
     # properties
@@ -93,10 +96,14 @@ class ElsSearch():
         if 'link' in self.results_df.columns:
             self.results_df['link'] = self.results_df.link.apply(
                 lambda x: dict([(e['@ref'], e['@href']) for e in x]))
-        for int_field in self.__int_resp_fields:
+        for int_field in self._int_resp_fields:
             if int_field in self.results_df.columns:
                 self.results_df[int_field] = self.results_df[int_field].apply(
                         int)
+        for date_field in self._date_resp_fields:
+            if date_field in self.results_df.columns:
+                self.results_df[date_field] = self.results_df[date_field].apply(
+                        pd.Timestamp)
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the
