@@ -7,6 +7,7 @@
 from . import log_util
 from urllib.parse import quote_plus as url_encode
 import pandas as pd
+from .utils import recast_df
 
 logger = log_util.get_logger(__name__)
 
@@ -16,13 +17,6 @@ class ElsSearch():
 
     # static / class variables
     _base_url = u'https://api.elsevier.com/content/search/'
-    _int_resp_fields = [
-            'document-count',
-            'citedby-count',
-            ]
-    _date_resp_fields = [
-            'prism:coverDate',
-            ]
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
@@ -30,6 +24,7 @@ class ElsSearch():
         self.index = index
         self._uri = self._base_url + self.index + '?query=' + url_encode(
                 self.query)
+        self.results_df = pd.DataFrame()
 
     # properties
     @property
@@ -75,7 +70,7 @@ class ElsSearch():
     def uri(self):
         """Gets the request uri for the search"""
         return self._uri
-
+    
     def execute(self, els_client = None, get_all = False):
         """Executes the search. If get_all = False (default), this retrieves
             the default number of results specified for the API. If
@@ -92,21 +87,7 @@ class ElsSearch():
                         next_url = e['@href']
                 api_response = els_client.exec_request(next_url)
                 self._results += api_response['search-results']['entry']
-        self.results_df = pd.DataFrame(self._results)
-        # TODO: turn this logic (i.e. apply type and format conversion to 
-        #   commonly used fields) into a decorator.
-        if 'link' in self.results_df.columns:
-            self.results_df['link'] = self.results_df.link.apply(
-                lambda x: dict([(e['@ref'], e['@href']) for e in x]))
-        for int_field in self._int_resp_fields:
-            if int_field in self.results_df.columns:
-                self.results_df[int_field] = self.results_df[int_field].apply(
-                        int)
-        for date_field in self._date_resp_fields:
-            if date_field in self.results_df.columns:
-                print("Converting {} for {}".format(date_field, self.uri))
-                self.results_df[date_field] = self.results_df[date_field].apply(
-                        pd.Timestamp)
+        self.results_df = recast_df(pd.DataFrame(self._results))
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the
