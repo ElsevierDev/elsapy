@@ -1,7 +1,6 @@
 .cache
 config.json
 niso_training_prog.py
-test_elsapy.py
 *.pyc
 *.log
 /data
