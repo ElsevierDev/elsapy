@@ -6,7 +6,7 @@ setup(
     name = 'elsapy',
     version = version,
     description = "A Python module for use with Elsevier's APIs: Scopus, ScienceDirect, others - see https://api.elsevier.com",
-    long_description = "See https://github.com/ElsevierDev/elsapy for the latest information / background to this project."
+    long_description = "See https://github.com/ElsevierDev/elsapy for the latest information / background to this project.",
     author = 'Elsevier, Inc.',
     author_email = 'integrationsupport@elsevier.com',
     url = 'https://github.com/ElsevierDev/elsapy',
