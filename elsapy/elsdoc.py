@@ -6,6 +6,7 @@
 
 from . import log_util
 from .elsentity import ElsEntity
+from urllib import parse
 
 logger = log_util.get_logger(__name__)
 
