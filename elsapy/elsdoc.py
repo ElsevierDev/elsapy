@@ -59,7 +59,8 @@ class AbsDoc(ElsEntity):
     @property
     def title(self):
         """Gets the document's title"""
-        return self.data["coredata"]["dc:title"];
+        return self.data['coredata']
+        # return self.data["coredata"]["dc:title"];
 
     @property
     def uri(self):

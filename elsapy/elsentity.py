@@ -77,6 +77,7 @@ class ElsEntity(metaclass=ABCMeta):
             logger.info("Data loaded for " + self.uri)
             return True
         except (requests.HTTPError, requests.RequestException) as e:
+            print(e)
             for elm in e.args:
                 logger.warning(elm)
             return False

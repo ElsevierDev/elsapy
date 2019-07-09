@@ -34,10 +34,13 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
 			NOTE: this method requires elevated API permissions.
 			See http://bit.ly/2leirnq for more info."""
         if els_client:
+            print('if')
             self._client = els_client;
         elif not self.client:
+            print('elif')
             raise ValueError('''Entity object not currently bound to els_client instance. Call .read() with els_client argument or set .client attribute.''')
         try:
+            print('try')
             api_response = self.client.exec_request(self.uri + "?view=documents")
             if isinstance(api_response[payloadType], list):
                 data = api_response[payloadType][0]
@@ -60,6 +63,7 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
             logger.info("Documents loaded for " + self.uri)
             return True
         except (requests.HTTPError, requests.RequestException) as e:
+            print('except', e)
             logger.warning(e.args)
             return False
 

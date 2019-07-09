@@ -14,12 +14,18 @@ class ElsSearch():
 
     # static variables
     __base_url = u'https://api.elsevier.com/content/search/'
+    __base_url__ = u'https://api.elsevier.com/content/'
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
-        self.query = query
+        self.query = query + '&view=complete'
         self.index = index
-        self._uri = self.__base_url + self.index + '?query=' + self.query
+        if index == 'metadata':
+            self._uri = self.__base_url__ + 'metadata/article' + '?query=' + self.query
+        elif index == 'scopus':
+            self._uri = self.__base_url + self.index + '?query=' + self.query
+        elif index == 'author':
+            self._uri = self.__base_url__ + 'search/author' + '?query=' + self.query
 
     # properties
     @property
@@ -72,6 +78,7 @@ class ElsSearch():
             get_all = True, multiple API calls will be made to iteratively get 
             all results for the search, up to a maximum of 5,000."""
         ## TODO: add exception handling
+        print('Retrieved url:', self._uri)
         api_response = els_client.exec_request(self._uri)
         self._tot_num_res = int(api_response['search-results']['opensearch:totalResults'])
         self._results = api_response['search-results']['entry']
