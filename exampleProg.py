@@ -63,7 +63,7 @@ else:
 
 ## Load list of documents from the API into affilation and author objects.
 # Since a document list is retrieved for 25 entries at a time, this is
-#  a potentially lenghty operation - hence the prompt.
+#  a potentially lengthy operation - hence the prompt.
 print ("Load documents (Y/N)?")
 s = input('--> ')
 
