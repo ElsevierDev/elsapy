@@ -18,7 +18,10 @@ class ElsSearch():
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
-        self.query = query + '&view=complete'
+        if index != 'author':
+            self.query = query + '&view=complete'
+        else:
+            self.query = query
         self.index = index
         if index == 'metadata':
             self._uri = self.__base_url__ + 'metadata/article' + '?query=' + self.query
@@ -78,7 +81,7 @@ class ElsSearch():
             get_all = True, multiple API calls will be made to iteratively get 
             all results for the search, up to a maximum of 5,000."""
         ## TODO: add exception handling
-        print('Retrieved url:', self._uri)
+        print('Retrieved url:', self._uri + '&apikey=376e143aa5cbc7764598c425e084ae7d')
         api_response = els_client.exec_request(self._uri)
         self._tot_num_res = int(api_response['search-results']['opensearch:totalResults'])
         self._results = api_response['search-results']['entry']
