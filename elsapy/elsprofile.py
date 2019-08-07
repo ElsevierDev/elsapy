@@ -180,7 +180,11 @@ class ElsAffil(ElsProfile):
     @property
     def name(self):
         """Gets the affiliation's name"""
-        return self.data["affiliation-name"];     
+        return self.data["affiliation-name"]
+
+    @property
+    def parent(self):
+        return self.data.get('institution-profile', {}).get('@parent', None)
 
     # modifier functions
     def read(self, els_client = None):
