@@ -26,6 +26,8 @@ class ElsClient:
  
     # constructors
     def __init__(self, api_key, inst_token = None, num_res = 25, local_dir = None):
+        # TODO: make num_res configurable for searches and documents/authors view
+        #   - see https://github.com/ElsevierDev/elsapy/issues/32
         """Initializes a client with a given API Key and, optionally, institutional
             token, number of results per request, and local data path."""
         self.api_key = api_key

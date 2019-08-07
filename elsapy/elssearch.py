@@ -15,6 +15,8 @@ class ElsSearch():
     """Represents a search to one of the search indexes accessible
          through api.elsevier.com. Returns True if successful; else, False."""
 
+    # TODO: add support for pagination in Scopus - see https://github.com/ElsevierDev/elsapy/issues/31
+
     # static / class variables
     _base_url = u'https://api.elsevier.com/content/search/'
 
