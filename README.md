@@ -19,7 +19,7 @@ More info on the [wiki](https://github.com/ElsevierDev/elsapy/wiki).
 
 ## Prerequisites
 *   An API key from http://dev.elsevier.com
-*   Python 3.x on your machine, with the [Requests HTTP library](http://docs.python-requests.org/) added. If you have neither installed yet, you might want to get the [Anaconda distribution of Python 3.6](https://www.continuum.io/downloads) go get both in one go (plus a lot of other useful stuff)
+*   Python 3.x on your machine, with the [Requests HTTP](http://docs.python-requests.org/) and [pandas](https://pandas.pydata.org/) libraries added. If you have neither installed yet, you might want to get the [Anaconda distribution of Python 3.6](https://www.continuum.io/downloads) go get both in one go (plus a lot of other useful stuff)
 *   A network connection at an institution that subscribes to Scopus and/or ScienceDirect
 *   Some knowledge of Python and [object-oriented design](https://en.wikipedia.org/wiki/Object-oriented_design)
 

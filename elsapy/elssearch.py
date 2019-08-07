@@ -6,7 +6,7 @@
 
 from . import log_util
 from urllib.parse import quote_plus as url_encode
-import pandas as pd
+import pandas as pd, json
 from .utils import recast_df
 
 logger = log_util.get_logger(__name__)
@@ -87,6 +87,8 @@ class ElsSearch():
                         next_url = e['@href']
                 api_response = els_client.exec_request(next_url)
                 self._results += api_response['search-results']['entry']
+        with open('dump.json', 'w') as f:
+            f.write(json.dumps(self._results))
         self.results_df = recast_df(pd.DataFrame(self._results))
 
     def hasAllResults(self):

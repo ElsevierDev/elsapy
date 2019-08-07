@@ -1,5 +1,6 @@
 .cache
 config.json
+dump.json
 niso_training_prog.py
 *.pyc
 *.log

@@ -4,6 +4,10 @@ project more maintainable.
 """
 
 import pandas as pd
+from . import log_util
+
+logger = log_util.get_logger(__name__)
+
 
 def recast_df(df):
     
