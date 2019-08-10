@@ -68,7 +68,7 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
             return False
 
     def write_docs(self):
-        """If a doclist exists for the entity, writes it to disk as a .JSON file
+        """If a doclist exists for the entity, writes it to disk as a JSON file
              with the url-encoded URI as the filename and returns True. Else,
              returns False."""
         if self.doc_list:
