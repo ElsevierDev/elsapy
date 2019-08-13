@@ -15,15 +15,17 @@ class ElsSearch():
     """Represents a search to one of the search indexes accessible
          through api.elsevier.com. Returns True if successful; else, False."""
 
-    # TODO: add support for pagination in Scopus - see https://github.com/ElsevierDev/elsapy/issues/31
-
     # static / class variables
     _base_url = u'https://api.elsevier.com/content/search/'
+    _cursored_indexes = [
+        'scopus',
+    ]
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
         self.query = query
         self.index = index
+        self._cursor_supported = (index in self._cursored_indexes)
         self._uri = self._base_url + self.index + '?query=' + url_encode(
                 self.query)
         self.results_df = pd.DataFrame()
@@ -46,8 +48,8 @@ class ElsSearch():
 
     @index.setter
     def index(self, index):
-        self._index = index
         """Sets the label of the index targeted by the search"""
+        self._index = index
 
     @property
     def results(self):
@@ -72,6 +74,17 @@ class ElsSearch():
     def uri(self):
         """Gets the request uri for the search"""
         return self._uri
+
+    def _upper_limit_reached(self):
+        """Determines if the upper limit for retrieving results from of the
+            search index is reached. Returns True if so, else False. Upper 
+            limit is 5,000 for indexes that don't support cursor-based 
+            pagination."""
+        if self._cursor_supported:
+            return False
+        else:
+            return self.num_res >= 5000
+
     
     def execute(self, els_client = None, get_all = False):
         """Executes the search. If get_all = False (default), this retrieves
@@ -83,7 +96,7 @@ class ElsSearch():
         self._tot_num_res = int(api_response['search-results']['opensearch:totalResults'])
         self._results = api_response['search-results']['entry']
         if get_all is True:
-            while (self.num_res < self.tot_num_res) and (self.num_res < 5000):
+            while (self.num_res < self.tot_num_res) and not self._upper_limit_reached():
                 for e in api_response['search-results']['link']:
                     if e['@ref'] == 'next':
                         next_url = e['@href']

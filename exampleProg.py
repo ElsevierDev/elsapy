@@ -93,12 +93,12 @@ client.inst_token = config['insttoken']
 #aff_srch.execute(client)
 #print ("aff_srch has", len(aff_srch.results), "results.")
 
-### Initialize doc search object and execute search, retrieving all results
-#doc_srch = ElsSearch("AFFIL(dartmouth) AND AUTHOR-NAME(lewis) AND PUBYEAR > 2011",'scopus')
-#doc_srch.execute(client, get_all = True)
-#print ("doc_srch has", len(doc_srch.results), "results.")
-
 ## Initialize doc search object and execute search, retrieving all results
-doc_srch = ElsSearch("star trek vs star wars",'sciencedirect')
+doc_srch = ElsSearch("AFFIL(dartmouth) AND AUTHOR-NAME(lewis) AND PUBYEAR > 2011",'scopus')
 doc_srch.execute(client, get_all = True)
 print ("doc_srch has", len(doc_srch.results), "results.")
+
+## Initialize doc search object and execute search, retrieving all results
+#doc_srch = ElsSearch("star trek vs star wars",'sciencedirect')
+#doc_srch.execute(client, get_all = True)
+#print ("doc_srch has", len(doc_srch.results), "results.")
