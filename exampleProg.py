@@ -15,16 +15,16 @@ con_file.close()
 client = ElsClient(config['apikey'])
 client.inst_token = config['insttoken']
 
-## Author example
-# Initialize author with uri
-my_auth = ElsAuthor(
-        uri = 'https://api.elsevier.com/content/author/author_id/7004367821')
-# Read author data, then write to disk
-if my_auth.read(client):
-    print ("my_auth.full_name: ", my_auth.full_name)
-    my_auth.write()
-else:
-    print ("Read author failed.")
+### Author example
+## Initialize author with uri
+#my_auth = ElsAuthor(
+#        uri = 'https://api.elsevier.com/content/author/author_id/7004367821')
+## Read author data, then write to disk
+#if my_auth.read(client):
+#    print ("my_auth.full_name: ", my_auth.full_name)
+#    my_auth.write()
+#else:
+#    print ("Read author failed.")
 #
 ### Affiliation example
 ## Initialize affiliation with ID as string
@@ -64,17 +64,17 @@ else:
 ## Load list of documents from the API into affilation and author objects.
 # Since a document list is retrieved for 25 entries at a time, this is
 #  a potentially lenghty operation - hence the prompt.
-print ("Load documents (Y/N)?")
-s = input('--> ')
-
-if (s == "y" or s == "Y"):
-
-    ## Read all documents for example author, then write to disk
-    if my_auth.read_docs(client):
-        print ("my_auth.doc_list has " + str(len(my_auth.doc_list)) + " items.")
-        my_auth.write_docs()
-    else:
-        print ("Read docs for author failed.")
+#print ("Load documents (Y/N)?")
+#s = input('--> ')
+#
+#if (s == "y" or s == "Y"):
+#
+#    ## Read all documents for example author, then write to disk
+#    if my_auth.read_docs(client):
+#        print ("my_auth.doc_list has " + str(len(my_auth.doc_list)) + " items.")
+#        my_auth.write_docs()
+#    else:
+#        print ("Read docs for author failed.")
 #
 #    ## Read all documents for example affiliation, then write to disk
 #    if my_aff.read_docs(client):
@@ -93,7 +93,12 @@ if (s == "y" or s == "Y"):
 #aff_srch.execute(client)
 #print ("aff_srch has", len(aff_srch.results), "results.")
 
+### Initialize doc search object and execute search, retrieving all results
+#doc_srch = ElsSearch("AFFIL(dartmouth) AND AUTHOR-NAME(lewis) AND PUBYEAR > 2011",'scopus')
+#doc_srch.execute(client, get_all = True)
+#print ("doc_srch has", len(doc_srch.results), "results.")
+
 ## Initialize doc search object and execute search, retrieving all results
-doc_srch = ElsSearch("AFFIL(dartmouth) AND AUTHOR-NAME(lewis) AND PUBYEAR > 2011",'scopus')
-doc_srch.execute(client, get_all = False)
+doc_srch = ElsSearch("star trek vs star wars",'sciencedirect')
+doc_srch.execute(client, get_all = True)
 print ("doc_srch has", len(doc_srch.results), "results.")

@@ -319,7 +319,7 @@ class TestSearch:
      {"query" : "affil(amsterdam)", "index" : "affiliation"},
      {"query" : "AFFIL(dartmouth) AND AUTHOR-NAME(lewis) AND PUBYEAR > 2011",
               "index" : "scopus"},
-     {"query" : "star trek vs star wars", "index" : "scidir"}
+     {"query" : "star trek vs star wars", "index" : "sciencedirect"}
     ]
     
     searches = [ ElsSearch(search_type["query"], search_type["index"])
