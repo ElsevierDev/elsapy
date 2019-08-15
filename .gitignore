@@ -2,6 +2,7 @@
 config.json
 niso_training_prog.py
 test_elsapy.py
+dump.json
 *.pyc
 *.log
 /data
