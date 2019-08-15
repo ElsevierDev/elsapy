@@ -28,7 +28,7 @@ class FullDoc(ElsEntity):
 
     # constructors
     def __init__(self, uri = '', sd_pii = '', doi = ''):
-        """Initializes a document given a Scopus document URI or Scopus ID."""
+        """Initializes a document given a ScienceDirect PII or DOI."""
         if uri and not sd_pii and not doi:
             super().__init__(uri)
         elif sd_pii and not uri and not doi:

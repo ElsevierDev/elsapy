@@ -13,6 +13,10 @@ except ImportError:
 ## Following adapted from https://docs.python.org/3/howto/logging-cookbook.html
 
 def get_logger(name):
+    # TODO: add option to disable logging, without stripping logger out of all modules
+    #   - e.g. by simply not writing to file if logging is disabled. See
+    #   https://github.com/ElsevierDev/elsapy/issues/26
+    
     # create logger with module name
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)

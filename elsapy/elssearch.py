@@ -5,6 +5,9 @@
     * https://api.elsevier.com"""
 
 from . import log_util
+from urllib.parse import quote_plus as url_encode
+import pandas as pd, json
+from .utils import recast_df
 
 logger = log_util.get_logger(__name__)
 
@@ -12,14 +15,20 @@ class ElsSearch():
     """Represents a search to one of the search indexes accessible
          through api.elsevier.com. Returns True if successful; else, False."""
 
-    # static variables
-    __base_url = u'https://api.elsevier.com/content/search/'
+    # static / class variables
+    _base_url = u'https://api.elsevier.com/content/search/'
+    _cursored_indexes = [
+        'scopus',
+    ]
 
     def __init__(self, query, index):
         """Initializes a search object with a query and target index."""
         self.query = query
         self.index = index
-        self._uri = self.__base_url + self.index + '?query=' + self.query
+        self._cursor_supported = (index in self._cursored_indexes)
+        self._uri = self._base_url + self.index + '?query=' + url_encode(
+                self.query)
+        self.results_df = pd.DataFrame()
 
     # properties
     @property
@@ -39,8 +48,8 @@ class ElsSearch():
 
     @index.setter
     def index(self, index):
-        self._index = index
         """Sets the label of the index targeted by the search"""
+        self._index = index
 
     @property
     def results(self):
@@ -66,6 +75,17 @@ class ElsSearch():
         """Gets the request uri for the search"""
         return self._uri
 
+    def _upper_limit_reached(self):
+        """Determines if the upper limit for retrieving results from of the
+            search index is reached. Returns True if so, else False. Upper 
+            limit is 5,000 for indexes that don't support cursor-based 
+            pagination."""
+        if self._cursor_supported:
+            return False
+        else:
+            return self.num_res >= 5000
+
+    
     def execute(self, els_client = None, get_all = False):
         """Executes the search. If get_all = False (default), this retrieves
             the default number of results specified for the API. If
@@ -76,12 +96,15 @@ class ElsSearch():
         self._tot_num_res = int(api_response['search-results']['opensearch:totalResults'])
         self._results = api_response['search-results']['entry']
         if get_all is True:
-            while (self.num_res < self.tot_num_res) and (self.num_res < 5000):
+            while (self.num_res < self.tot_num_res) and not self._upper_limit_reached():
                 for e in api_response['search-results']['link']:
                     if e['@ref'] == 'next':
                         next_url = e['@href']
                 api_response = els_client.exec_request(next_url)
-                self._results += api_response['search-results']['entry']         
+                self._results += api_response['search-results']['entry']
+        with open('dump.json', 'w') as f:
+            f.write(json.dumps(self._results))
+        self.results_df = recast_df(pd.DataFrame(self._results))
 
     def hasAllResults(self):
         """Returns true if the search object has retrieved all results for the

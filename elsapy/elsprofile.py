@@ -4,10 +4,12 @@
     * https://dev.elsevier.com
     * https://api.elsevier.com"""
 
-import requests, json, urllib
+import requests, json, urllib, pandas as pd
 from abc import ABCMeta, abstractmethod
 from . import log_util
 from .elsentity import ElsEntity
+from .utils import recast_df
+
 
 logger = log_util.get_logger(__name__)        
         
@@ -58,17 +60,18 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
                         self._doc_list = None
                     raise e
             logger.info("Documents loaded for " + self.uri)
+            self.docsframe = recast_df(pd.DataFrame(self._doc_list))
+            logger.info("Documents loaded into dataframe for " + self.uri)
             return True
         except (requests.HTTPError, requests.RequestException) as e:
             logger.warning(e.args)
             return False
 
     def write_docs(self):
-        """If a doclist exists for the entity, writes it to disk as a .JSON file
+        """If a doclist exists for the entity, writes it to disk as a JSON file
              with the url-encoded URI as the filename and returns True. Else,
              returns False."""
         if self.doc_list:
-            dataPath = self.client.local_dir
             dump_file = open('data/'
                              + urllib.parse.quote_plus(self.uri+'?view=documents')
                              + '.json', mode='w'
@@ -89,8 +92,8 @@ class ElsAuthor(ElsProfile):
     """An author of a document in Scopus. Initialize with URI or author ID."""
     
     # static variables
-    __payload_type = u'author-retrieval-response'
-    __uri_base = u'https://api.elsevier.com/content/author/author_id/'
+    _payload_type = u'author-retrieval-response'
+    _uri_base = u'https://api.elsevier.com/content/author/author_id/'
 
     # constructors
     def __init__(self, uri = '', author_id = ''):
@@ -98,7 +101,7 @@ class ElsAuthor(ElsProfile):
         if uri and not author_id:
             super().__init__(uri)
         elif author_id and not uri:
-            super().__init__(self.__uri_base + str(author_id))
+            super().__init__(self._uri_base + str(author_id))
         elif not uri and not author_id:
             raise ValueError('No URI or author ID specified')
         else:
@@ -124,7 +127,7 @@ class ElsAuthor(ElsProfile):
     def read(self, els_client = None):
         """Reads the JSON representation of the author from ELSAPI.
             Returns True if successful; else, False."""
-        if ElsProfile.read(self, self.__payload_type, els_client):
+        if ElsProfile.read(self, self._payload_type, els_client):
             return True
         else:
             return False
@@ -132,18 +135,27 @@ class ElsAuthor(ElsProfile):
     def read_docs(self, els_client = None):
         """Fetches the list of documents associated with this author from 
              api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.read_docs(self, self.__payload_type, els_client)
+        return ElsProfile.read_docs(self, self._payload_type, els_client)
 
     def read_metrics(self, els_client = None):
         """Reads the bibliographic metrics for this author from api.elsevier.com
              and updates self.data with them. Returns True if successful; else,
              False."""
         try:
-            api_response = els_client.exec_request(self.uri + "?field=document-count,cited-by-count,citation-count,h-index,dc:identifier")
-            data = api_response[self.__payload_type][0]
+            fields = [
+                    "document-count",
+                    "cited-by-count",
+                    "citation-count",
+                    "h-index",
+                    "dc:identifier",
+                    ]
+            api_response = els_client.exec_request(
+                    self.uri + "?field=" + ",".join(fields))
+            data = api_response[self._payload_type][0]
             if not self.data:
                 self._data = dict()
                 self._data['coredata'] = dict()
+            # TODO: apply decorator for type conversion of common fields
             self._data['coredata']['dc:identifier'] = data['coredata']['dc:identifier']
             self._data['coredata']['citation-count'] = int(data['coredata']['citation-count'])
             self._data['coredata']['cited-by-count'] = int(data['coredata']['citation-count'])
@@ -161,8 +173,8 @@ class ElsAffil(ElsProfile):
         Initialize with URI or affiliation ID."""
     
     # static variables
-    __payload_type = u'affiliation-retrieval-response'
-    __uri_base = u'https://api.elsevier.com/content/affiliation/affiliation_id/'
+    _payload_type = u'affiliation-retrieval-response'
+    _uri_base = u'https://api.elsevier.com/content/affiliation/affiliation_id/'
 
     # constructors
     def __init__(self, uri = '', affil_id = ''):
@@ -170,7 +182,7 @@ class ElsAffil(ElsProfile):
         if uri and not affil_id:
             super().__init__(uri)
         elif affil_id and not uri:
-            super().__init__(self.__uri_base + str(affil_id))
+            super().__init__(self._uri_base + str(affil_id))
         elif not uri and not affil_id:
             raise ValueError('No URI or affiliation ID specified')
         else:
@@ -186,7 +198,7 @@ class ElsAffil(ElsProfile):
     def read(self, els_client = None):
         """Reads the JSON representation of the affiliation from ELSAPI.
              Returns True if successful; else, False."""
-        if ElsProfile.read(self, self.__payload_type, els_client):
+        if ElsProfile.read(self, self._payload_type, els_client):
             return True
         else:
             return False
@@ -194,4 +206,4 @@ class ElsAffil(ElsProfile):
     def read_docs(self, els_client = None):
         """Fetches the list of documents associated with this affiliation from
               api.elsevier.com. Returns True if successful; else, False."""
-        return ElsProfile.read_docs(self, self.__payload_type, els_client)
+        return ElsProfile.read_docs(self, self._payload_type, els_client)

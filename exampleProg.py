@@ -36,8 +36,8 @@ else:
     print ("Read affiliation failed.")
 
 ## Scopus (Abtract) document example
-# Initialize document with Scopus ID.
-scp_doc = AbsDoc(scp_id = '84872135457')
+# Initialize document with ID as integer
+scp_doc = AbsDoc(scp_id = 84872135457)
 if scp_doc.read(client):
     print ("scp_doc.title: ", scp_doc.title)
     scp_doc.write()   
@@ -63,7 +63,7 @@ else:
 
 ## Load list of documents from the API into affilation and author objects.
 # Since a document list is retrieved for 25 entries at a time, this is
-#  a potentially lengthy operation - hence the prompt.
+#  a potentially lenghty operation - hence the prompt.
 print ("Load documents (Y/N)?")
 s = input('--> ')
 
@@ -93,7 +93,14 @@ aff_srch = ElsSearch('affil(amsterdam)','affiliation')
 aff_srch.execute(client)
 print ("aff_srch has", len(aff_srch.results), "results.")
 
-## Initialize doc search object and execute search, retrieving all results
-doc_srch = ElsSearch('star+trek+vs+star+wars','scopus')
+## Initialize doc search object using Scopus and execute search, retrieving 
+#   all results
+doc_srch = ElsSearch("AFFIL(dartmouth) AND AUTHOR-NAME(lewis) AND PUBYEAR > 2011",'scopus')
 doc_srch.execute(client, get_all = True)
+print ("doc_srch has", len(doc_srch.results), "results.")
+
+## Initialize doc search object using ScienceDirect and execute search, 
+#   retrieving all results
+doc_srch = ElsSearch("star trek vs star wars",'sciencedirect')
+doc_srch.execute(client, get_all = False)
 print ("doc_srch has", len(doc_srch.results), "results.")
