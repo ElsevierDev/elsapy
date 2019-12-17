@@ -13,7 +13,7 @@ from urllib.parse import quote_plus as url_encode
 import json, pathlib
 
 ## Load good client configuration
-conFile = open("config.json")
+conFile = open("elapsy.json")
 config = json.load(conFile)
 conFile.close()
 
