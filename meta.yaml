@@ -1,0 +1,26 @@
+source:
+  git_tag: v0.5.1
+  git_url: "https://github.com/james-geiger/elsapy.git"
+
+package:
+  name: elsapy
+  version: {{ environ['GIT_DESCRIBE_TAG'] }}
+
+build:
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  string: {{ environ.get('GIT_BUILD_STR', '') }}
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - requests
+    - pandas
+
+  run:
+    - python
+    - requests
+    - pandas
+
+about:
+  home: "https://github.com/james-geiger/elsapy/tree/conda"
