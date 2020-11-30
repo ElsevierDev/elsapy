@@ -1,5 +1,5 @@
 source:
-  git_tag: v0.5.1
+  git_tag: v0.5.2
   git_url: "https://github.com/james-geiger/elsapy.git"
 
 package:
