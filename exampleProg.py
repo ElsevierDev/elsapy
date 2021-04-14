@@ -5,7 +5,12 @@ from elsapy.elsprofile import ElsAuthor, ElsAffil
 from elsapy.elsdoc import FullDoc, AbsDoc
 from elsapy.elssearch import ElsSearch
 import json
-    
+
+## Comment out if you don't want to log files
+import elsapy
+elsapy.log_to_directory("logs")
+
+
 ## Load configuration
 con_file = open("config.json")
 config = json.load(con_file)
