@@ -47,9 +47,9 @@ class ElsProfile(ElsEntity, metaclass=ABCMeta):
                 data = api_response[payloadType]
             docCount = int(data["documents"]["@total"])
             self._doc_list = [x for x in data["documents"]["abstract-document"]]
-            for i in range (0, docCount//self.client.num_res):
+            for i in range (0, (docCount-1) // self.client.num_res):
                 try:
-                    api_response = self.client.exec_request(self.uri + "?view=documents&start=" + str((i+1) * self.client.num_res+1))
+                    api_response = self.client.exec_request(self.uri + "?view=documents&startref=" + str((i+1) * self.client.num_res+1))
                     if isinstance(api_response[payloadType], list):
                         data = api_response[payloadType][0]
                     else:
