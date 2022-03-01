@@ -86,13 +86,26 @@ class ElsSearch():
             return self.num_res >= 5000
 
     
-    def execute(self, els_client = None, get_all = False):
+    def execute(
+            self,
+            els_client = None,
+            get_all = False,
+            use_cursor = False,
+            view = None,
+            count = 25,
+            fields = []
+        ):
         """Executes the search. If get_all = False (default), this retrieves
             the default number of results specified for the API. If
             get_all = True, multiple API calls will be made to iteratively get 
             all results for the search, up to a maximum of 5,000."""
         ## TODO: add exception handling
-        api_response = els_client.exec_request(self._uri)
+        url = self._uri
+        if use_cursor:
+            url += "&cursor=*"
+        if view:
+            url += "&view={}".format(view)
+        api_response = els_client.exec_request(url)
         self._tot_num_res = int(api_response['search-results']['opensearch:totalResults'])
         self._results = api_response['search-results']['entry']
         if get_all is True:
