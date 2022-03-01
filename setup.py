@@ -2,6 +2,7 @@ from distutils.core import setup
 from setuptools import find_packages
 from elsapy.__init__ import version
 
+# TODO: use pbr for various packaging tasks.
 setup(
     name = 'elsapy',
     version = version,
