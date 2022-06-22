@@ -1,3 +1,15 @@
+## NOTE from andres-fr
+
+This fork was made to fix issue #26 (added optional logging functionality).
+The main repo logged by default into a `logs` directory. In this fork, logging is off by default and the user can provide a specific directory if they want to opt-in.
+
+I'm not sure if the main repo is maintained anymore. You can install this one with the following command:
+
+```
+pip install git+git://github.com/andres-fr/elsapy.git
+```
+
+
 # elsapy
 
 A Python module for use with api.elsevier.com. Its aim is to make life easier for people who are not primarily programmers, but need to interact with publication and citation data from Elsevier products in a programmatic manner (e.g. academic researchers). The module consists of the following classes:
